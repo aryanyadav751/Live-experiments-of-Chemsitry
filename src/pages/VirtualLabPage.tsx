@@ -3,6 +3,7 @@ import { Reaction, VirtualLabMode } from "../types";
 import { REACTIONS, getReactionsByChapter } from "../data/reactions";
 import { ExperimentSimulator } from "../components/ExperimentSimulator";
 import { DiscoveryLabWorkbench } from "../components/DiscoveryLabWorkbench";
+import { DiscoveryLab } from "../components/discovery/DiscoveryLab";
 import { ChallengeLab } from "../components/ChallengeLab";
 import { AuthBar } from "../components/AuthBar";
 import { GoogleDriveReportModal } from "../components/GoogleDriveReportModal";
@@ -191,10 +192,13 @@ export const VirtualLabPage: React.FC<VirtualLabPageProps> = ({
           </div>
           <div className="min-w-0">
             <div className="font-extrabold text-sm flex items-center gap-1.5">
-              <span>🔬 Discovery Lab</span>
+              <span>🔬 Discovery Lab 2.0</span>
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 font-bold">
+                NEW
+              </span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
-              Choose substances & observe reactions
+              &ldquo;Experiment. Discover. Understand.&rdquo;
             </p>
           </div>
         </button>
@@ -339,8 +343,8 @@ export const VirtualLabPage: React.FC<VirtualLabPageProps> = ({
         </div>
       )}
 
-      {/* MODE 2: DISCOVERY LAB */}
-      {labMode === "discovery" && <DiscoveryLabWorkbench />}
+      {/* MODE 2: DISCOVERY LAB 2.0 */}
+      {labMode === "discovery" && <DiscoveryLab />}
 
       {/* MODE 3: CHALLENGE LAB */}
       {labMode === "challenge" && <ChallengeLab />}

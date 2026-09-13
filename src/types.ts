@@ -185,11 +185,30 @@ export interface UserProgress {
 
 export type VirtualLabMode = "guided" | "discovery" | "challenge";
 
+export type SubstanceCategory =
+  | "Metals"
+  | "Non-metals"
+  | "Acids"
+  | "Bases"
+  | "Salts"
+  | "Carbon compounds"
+  | "Indicators"
+  | "Water"
+  | "Other NCERT substances"
+  | "Acid"
+  | "Base"
+  | "Metal"
+  | "Salt"
+  | "Oxide"
+  | "Organic"
+  | "Indicator"
+  | "Other";
+
 export interface DiscoverySubstance {
   id: string;
   name: string;
   formula: string;
-  category: "Acid" | "Base" | "Metal" | "Salt" | "Oxide" | "Organic" | "Indicator" | "Other";
+  category: SubstanceCategory;
   state: "solid" | "liquid" | "aqueous" | "gas";
   color: string;
   description: string;
@@ -197,6 +216,40 @@ export interface DiscoverySubstance {
   hazardNote?: string;
   phValue?: number;
 }
+
+export interface LabContext {
+  chapter: string;
+  selectedSubstances: string[];
+  reactionId?: string;
+  title?: string;
+  equation?: string;
+  balancedEquation?: string;
+  reactionType?: string[] | string;
+  observations?: string[];
+  products?: string[];
+  experimentMode?: string;
+  currentQuestion?: string;
+  conditions?: {
+    heat: boolean;
+    light: boolean;
+    electricity: boolean;
+    water: boolean;
+  };
+}
+
+export interface DiscoveryHistoryItem {
+  id: string;
+  reactionId: string;
+  title: string;
+  equation: string;
+  balancedEquation: string;
+  reactionType: string;
+  chapter: string;
+  timestamp: number;
+  substances: string[];
+  completedChallenge?: string;
+}
+
 
 export interface DiscoveryReactionResult {
   occurred: boolean;
@@ -219,6 +272,7 @@ export interface DiscoveryReactionResult {
     temperatureChange?: number; // delta in deg C
     flameColor?: string;
     soundDesc?: string;
+    deposit?: string;
   };
 }
 
@@ -234,6 +288,9 @@ export interface DiscoveryRule {
     conditions: {
       heat: boolean;
       water: boolean;
+      light?: boolean;
+      electricity?: boolean;
+      catalyst?: boolean;
       testedWithSplinter?: boolean;
       testedWithLimeWater?: boolean;
     },
@@ -244,6 +301,9 @@ export interface DiscoveryRule {
     conditions: {
       heat: boolean;
       water: boolean;
+      light?: boolean;
+      electricity?: boolean;
+      catalyst?: boolean;
       testedWithSplinter?: boolean;
       testedWithLimeWater?: boolean;
     }

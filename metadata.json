@@ -1,6 +1,6 @@
 {
   "name": "Virtual Chemistry Lab — Experiment Anything",
-  "description": "Interactive virtual chemistry laboratory featuring Guided Experiments, Discovery Lab, Challenge Lab, 3D molecular views, and Google Drive lab report integration.",
+  "description": "Interactive CBSE Class 10 NCERT virtual chemistry laboratory featuring Discovery Lab 2.0 sandbox, Gemini Lab Assistant, Guided Experiments, Challenge Lab, and 3D molecular views.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

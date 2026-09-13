@@ -3,11 +3,76 @@ import { DiscoveryRule, DiscoveryReactionResult } from "../types";
 export interface SimulationConditions {
   heat: boolean;
   water: boolean;
+  light?: boolean;
+  electricity?: boolean;
+  catalyst?: boolean;
   testedWithSplinter?: boolean;
   testedWithLimeWater?: boolean;
 }
 
 export const DISCOVERY_RULES: DiscoveryRule[] = [
+  // 0A. Photolytic Decomposition of Silver Chloride (NCERT Activity 1.8)
+  {
+    id: "photolytic-silver-chloride",
+    reactionId: "ch1-photolytic-silver-chloride",
+    title: "Photolytic Decomposition of Silver Chloride",
+    reactants: ["agcl"],
+    matches: (set, conditions) => (conditions.light === true && set.has("agcl")),
+    getResult: () => ({
+      occurred: true,
+      title: "Photolytic Decomposition of Silver Chloride",
+      equation: "2AgCl(s) —(Sunlight)→ 2Ag(s) + Cl₂(g)",
+      balancedEquation: "2AgCl(s) ⎯⎯Sunlight⎯⎯→ 2Ag(s) + Cl₂(g)",
+      reactionType: "Photolytic Decomposition / Endothermic",
+      observations: [
+        "White silver chloride turns grey in sunlight as metallic silver is formed.",
+        "Pungent greenish-yellow chlorine gas is slowly released.",
+        "Classic reaction historically used in black and white photography."
+      ],
+      explanation:
+        "Light energy breaks the chemical bonds in white silver chloride to yield grey metallic silver and chlorine gas (NCERT Activity 1.8).",
+      energyChange: "Endothermic",
+      isHazardous: false,
+      visualEffect: {
+        color: "#94a3b8",
+        hasBubbles: true,
+        gasName: "Cl₂ (Greenish gas trace)",
+        soundDesc: "Subtle color darkening under light"
+      }
+    })
+  },
+
+  // 0B. Electrolysis of Water (NCERT Activity 1.7)
+  {
+    id: "water-electrolysis",
+    reactionId: "ch1-electrolysis-of-water",
+    title: "Electrolytic Decomposition of Water",
+    reactants: ["h2o"],
+    matches: (set, conditions) => (conditions.electricity === true && (set.has("h2o") || conditions.water)),
+    getResult: () => ({
+      occurred: true,
+      title: "Electrolytic Decomposition of Water",
+      equation: "2H₂O(l) —(Electric Current)→ 2H₂(g) + O₂(g)",
+      balancedEquation: "2H₂O(l) ⎯⎯Electricity⎯⎯→ 2H₂(g) + O₂(g)",
+      reactionType: "Electrolytic Decomposition / Redox",
+      observations: [
+        "Gas bubbles evolve vigorously at both electrodes in the voltameter.",
+        "Gas volume collected at the cathode (Hydrogen) is exactly TWICE (2:1) that collected at the anode (Oxygen).",
+        "Cathode gas burns with a pop sound, while anode gas rekindles a glowing splinter."
+      ],
+      explanation:
+        "Water decomposes when an electric current passes through it into hydrogen and oxygen gases in a 2:1 stoichiometric volume ratio (NCERT Activity 1.7).",
+      energyChange: "Endothermic",
+      isHazardous: false,
+      visualEffect: {
+        color: "#bae6fd",
+        hasBubbles: true,
+        gasName: "2H₂ (Cathode) + O₂ (Anode)",
+        soundDesc: "Steady effervescence at electrodes"
+      }
+    })
+  },
+
   // 1. Thermal Decomposition of Ferrous Sulphate (NCERT Activity 1.5)
   {
     id: "feso4-thermal-decomposition",
