@@ -19,8 +19,11 @@ export const CHAPTER_4_REACTIONS: Reaction[] = [
     ],
     explanation: "Saturated hydrocarbons burn with a clean blue flame in sufficient supply of air. Carbon and hydrogen are fully oxidized to carbon dioxide and steam, releasing large enthalpy.",
     molecularExplanation: "C-H single bonds break; C bonds with 2 oxygen atoms to form linear O=C=O, while 4 H atoms form two bent H-O-H molecules.",
-    experimentMode: "safe",
-    safetyNotes: ["Safe domestic LPG / CNG burner simulation."],
+    experimentMode: "teacher-demo",
+    safetyNotes: [
+      "⚠️ High Temperature Gas Combustion: Methane flames exceed 1200°C.",
+      "Safely visualized in virtual lab with complete vs incomplete combustion air-shutter simulation."
+    ],
     realLifeApplications: ["Cooking gas (PNG/CNG), domestic home heating, thermal power stations."],
     ncertConcept: "Section 4.3.1 & Activity 4.4: Clean blue flame with sufficient air vs yellow sooty flame with limited air.",
     tags: ["Methane", "Combustion", "Blue Flame", "Exothermic", "CNG"],
@@ -28,9 +31,9 @@ export const CHAPTER_4_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Why do saturated hydrocarbons give a clean blue flame while unsaturated hydrocarbons give a yellow sooty flame? (Ans: Saturated hydrocarbons have lower carbon percentage and undergo complete combustion)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Feed methane (CH₄) gas through burner nozzle." },
-      { step: 2, description: "Open air inlet collar to provide abundant oxygen." },
-      { step: 3, description: "Gas burns with a clear, non-sooty intense blue flame, generating CO₂ and H₂O." }
+      { step: 1, description: "Add virtual substance: Introduce methane (CH₄) hydrocarbon gas stream." },
+      { step: 2, description: "Start simulation: Adjust virtual air collar for abundant oxygen supply and trigger ignition." },
+      { step: 3, description: "Observe combustion: Clean non-sooty blue flame forms, yielding carbon dioxide and steam." }
     ],
     interactiveEntities: [
       { formula: "CH₄", name: "Methane", role: "reactant", state: "g", color: "#60a5fa", ncertNote: "Major component of CNG and biogas" },
@@ -68,9 +71,10 @@ export const CHAPTER_4_REACTIONS: Reaction[] = [
     ],
     explanation: "Alkaline potassium permanganate acts as a strong oxidising agent, transferring nascent oxygen to the -CH₂OH primary alcohol group to convert it into a -COOH carboxylic acid group.",
     molecularExplanation: "Ethanol loses 2 hydrogen atoms and gains 1 oxygen atom: CH₃CH₂OH + 2[O] → CH₃COOH + H₂O.",
-    experimentMode: "safe",
+    experimentMode: "teacher-demo",
     safetyNotes: [
-      "Ethanol is flammable. Always heat in a gentle warm water bath, NEVER directly over an open flame."
+      "⚠️ Volatile Solvent Safety: Ethanol vapors are flammable and must never be exposed to open flames directly.",
+      "Safely controlled in virtual water bath simulation."
     ],
     realLifeApplications: ["Production of vinegar, laboratory synthesis of carboxylic acids, breathalyzer testing chemistry."],
     ncertConcept: "Activity 4.5: Definition of oxidising agents (alkaline KMnO₄ or acidified K₂Cr₂O₇).",
@@ -79,9 +83,9 @@ export const CHAPTER_4_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Why is the conversion of ethanol to ethanoic acid considered an oxidation reaction? Name the reagent used. (Ans: Oxygen is added / hydrogen removed; Alkaline KMnO₄ or acidified K₂Cr₂O₇)",
     energyChange: "Endothermic",
     animationSteps: [
-      { step: 1, description: "Warm 3 mL ethanol in a test tube immersed in water bath." },
-      { step: 2, description: "Add drops of deep purple alkaline KMnO₄; color decolourizes as ethanol oxidizes." },
-      { step: 3, description: "Once oxidation to ethanoic acid completes, purple color persists." }
+      { step: 1, description: "Add virtual substance: Select ethanol sample in the virtual water bath." },
+      { step: 2, description: "Start simulation: Add alkaline potassium permanganate (KMnO₄) oxidizer." },
+      { step: 3, description: "Observe redox transition: Deep purple colour decolourizes during active oxidation, producing ethanoic acid." }
     ],
     interactiveEntities: [
       { formula: "CH₃CH₂OH", name: "Ethanol", role: "reactant", state: "l", color: "#e2e8f0", ncertNote: "Drinking alcohol / industrial solvent" },
@@ -339,10 +343,10 @@ export const CHAPTER_4_REACTIONS: Reaction[] = [
     ],
     explanation: "Carboxylic acids react with alcohols in the presence of an acid catalyst to form sweet-smelling organic compounds called esters.",
     molecularExplanation: "The -OH group from ethanoic acid and the -H from ethanol condense to form water, linking the acyl group to ethoxy: CH₃-C(=O)-O-CH₂CH₃.",
-    experimentMode: "safe",
+    experimentMode: "teacher-demo",
     safetyNotes: [
-      "Always warm in a water bath because ethanol and ester are volatile and flammable.",
-      "Gently waft the sweet scent with cupped hand to detect the fragrance."
+      "⚠️ Flammable Vapours & Concentrated Acid: Requires concentrated H₂SO₄ catalyst and gentle water bath warming.",
+      "Safely simulated with sensory aroma feedback."
     ],
     realLifeApplications: [
       "Perfumes, cosmetics, fruit flavoring agents (apple, pear, pineapple flavors), and nail polish removers."
@@ -353,9 +357,9 @@ export const CHAPTER_4_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Describe an activity to demonstrate esterification. Write the balanced equation and one use of esters. (Ans: Heat CH₃COOH + C₂H₅OH with acid catalyst; sweet fruity smell; used in perfumes/flavorings)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Combine 1 mL glacial acetic acid and 1 mL ethanol with a few drops conc. H₂SO₄." },
-      { step: 2, description: "Warm the test tube inside a water bath for 5 minutes." },
-      { step: 3, description: "Pour into water beaker; notice distinct delightful fruity fragrance." }
+      { step: 1, description: "Add virtual substance: Combine ethanoic acid and ethanol in virtual tube." },
+      { step: 2, description: "Start simulation: Add acid catalyst and warm gently in virtual water bath." },
+      { step: 3, description: "Observe ester formation: Ester separates with a pleasant, sweet fruity aroma." }
     ],
     interactiveEntities: [
       { formula: "CH₃COOH", name: "Glacial Ethanoic Acid", role: "reactant", state: "l", color: "#f8fafc", ncertNote: "Acetic acid, pungent vinegar aroma" },
@@ -408,8 +412,11 @@ export const CHAPTER_4_REACTIONS: Reaction[] = [
     ],
     explanation: "Alkaline hydrolysis of an ester with sodium hydroxide converts it into alcohol and sodium salt of carboxylic acid. This reaction is known as saponification because it forms soap.",
     molecularExplanation: "OH⁻ nucleophilically attacks the ester carbonyl carbon, cleaving the ester bond into carboxylate anion (CH₃COO⁻) and ethoxide (which protonates to ethanol).",
-    experimentMode: "safe",
-    safetyNotes: ["Safe laboratory soap making simulation."],
+    experimentMode: "teacher-demo",
+    safetyNotes: [
+      "⚠️ Caustic Alkali Warning: Hot 20% NaOH causes caustic alkaline burns.",
+      "Safely simulated with salting-out curd precipitation."
+    ],
     realLifeApplications: ["Industrial manufacturing of bathing and laundry soaps from vegetable oil / animal fats."],
     ncertConcept: "Section 4.4.2 & Section 4.5: Definition of saponification and chemistry of soap micelle formation.",
     tags: ["Saponification", "Soap", "Ester Hydrolysis", "NaOH", "Board Favorite"],
@@ -417,9 +424,9 @@ export const CHAPTER_4_REACTIONS: Reaction[] = [
     commonBoardQuestion: "What is saponification? Write the chemical equation. Why is common salt added after saponification? (Ans: Alkaline hydrolysis of ester to form soap; NaCl is added for salting out / precipitation of soap)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Combine ethyl ethanoate ester with aqueous sodium hydroxide in a beaker." },
-      { step: 2, description: "Heat the mixture with continuous stirring; ester hydrolyzes." },
-      { step: 3, description: "Add common salt (NaCl); curd of solid soap separates out on cooling." }
+      { step: 1, description: "Add virtual substance: Combine ester with concentrated sodium hydroxide alkali." },
+      { step: 2, description: "Start simulation: Apply thermal energy to hydrolyze ester bonds." },
+      { step: 3, description: "Observe salting out: Introduce virtual NaCl to salt out solid curd of soap." }
     ],
     interactiveEntities: [
       { formula: "CH₃COOC₂H₅", name: "Ethyl Ethanoate (Ester)", role: "reactant", state: "l", color: "#fbcfe8" },

@@ -28,88 +28,87 @@ export const EXPERIMENTS_DATABASE: Experiment[] = [
     id: "exp-magnesium-ribbon",
     reactionId: "ch1-magnesium-ribbon",
     title: "Burning of Magnesium Ribbon in Air (Activity 1.1)",
-    apparatus: ["Bunsen Burner", "Tongs", "Watch Glass", "Sandpaper", "Safety Goggles"],
-    chemicals: ["Magnesium Ribbon (cleaned)", "Atmospheric Oxygen"],
+    apparatus: ["Virtual Workbench", "Heat Source", "Digital Sensor", "Spectrometry View"],
+    chemicals: ["Magnesium Ribbon (Mg)", "Atmospheric Oxygen (O₂)"],
     steps: [
-      { step: 1, title: "Surface Cleaning", description: "Clean a 2 cm magnesium ribbon with sandpaper to scrape off the basic magnesium carbonate coating.", action: "Rub Sandpaper" },
-      { step: 2, title: "Holding with Tongs", description: "Hold the cleaned magnesium ribbon firmly at one end using laboratory pair of tongs.", action: "Grip Ribbon" },
-      { step: 3, title: "Ignition in Flame", description: "Bring the other tip of the ribbon into the flame of a spirit lamp or Bunsen burner.", action: "Ignite in Flame" },
-      { step: 4, title: "Collecting Ash", description: "Collect the falling white powder onto a clean watch glass held underneath.", action: "Collect Powder" }
+      { step: 1, title: "Add Virtual Substance", description: "Select cleaned metallic Magnesium ribbon (Mg) and place it on the virtual reaction pedestal.", action: "Add Virtual Mg" },
+      { step: 2, title: "Start Simulation", description: "Engage the virtual thermal source to initiate rapid oxidation with atmospheric oxygen.", action: "Start Simulation" },
+      { step: 3, title: "Observe Luminescence & Product", description: "Observe the intense dazzling white flame and witness the formation of white Magnesium Oxide (MgO) ash.", action: "Observe Luminescence" },
+      { step: 4, title: "View Molecular Explanation", description: "Examine the electron transfer where Mg loses 2 electrons to oxygen forming the ionic MgO crystal lattice.", action: "View Molecular Model" }
     ],
     observations: [
       "Magnesium ribbon burns with a dazzling, brilliant white flame.",
-      "A powdery white substance (Magnesium Oxide, MgO) is left behind on the watch glass.",
+      "A powdery white substance (Magnesium Oxide, MgO) is left behind on the virtual watch glass.",
       "Intense heat energy and blinding white radiance are generated."
     ],
     inference: "Magnesium actively combines with atmospheric oxygen at ignition temperature in a combination and exothermic redox reaction: 2Mg(s) + O₂(g) → 2MgO(s).",
     animationType: "combination",
     safetyLevel: "teacher-demo",
     safetyPrecautions: [
-      "Never stare directly at the dazzling white flame; wear UV protective goggles.",
-      "Always hold ribbon firmly with metal tongs, never bare hands."
+      "⚠️ Virtual Simulation Notice: In a physical laboratory, burning magnesium emits intense UV radiation requiring specialized dark goggles.",
+      "Simulated safely on screen without radiation exposure."
     ]
   },
   {
     id: "exp-slaked-lime",
     reactionId: "ch1-slaked-lime",
     title: "Slaking of Quicklime with Water (Activity 1.4)",
-    apparatus: ["Borosilicate Beaker", "Glass Rod", "Thermometer", "Dropper"],
-    chemicals: ["Calcium Oxide (Quicklime) lumps", "Distilled Water"],
+    apparatus: ["Virtual Borosilicate Beaker", "Thermal Probe", "Suspension Sensor"],
+    chemicals: ["Calcium Oxide (Quicklime, CaO)", "Deionised Water (H₂O)"],
     steps: [
-      { step: 1, title: "Adding Quicklime", description: "Place approximately 5 g of white quicklime (CaO) lumps into a dry 250 mL beaker.", action: "Add CaO Lumps" },
-      { step: 2, title: "Adding Water", description: "Slowly pour 50 mL of water over the quicklime along the inner wall of the beaker.", action: "Pour Water" },
-      { step: 3, title: "Observing Exothermic Slaking", description: "Observe the hissing sound, steam evolution, and the crumbling of lumps into fine powder.", action: "Observe Reaction" },
-      { step: 4, title: "Temperature Check", description: "Carefully touch the outer wall of the beaker or check temperature with a laboratory thermometer.", action: "Measure Temp" }
+      { step: 1, title: "Add Virtual Substance", description: "Select solid Calcium Oxide (Quicklime, CaO) and load it into the virtual reaction vessel.", action: "Add Virtual CaO" },
+      { step: 2, title: "Start Simulation", description: "Dispense virtual water into the reaction vessel to initiate the exothermic hydration.", action: "Start Simulation" },
+      { step: 3, title: "Observe Exothermic Change", description: "Observe violent hissing effervescence, rapid steam evolution, and thermal probe surge to ~90°C.", action: "Observe Thermal Surge" },
+      { step: 4, title: "View Molecular Explanation", description: "Observe the formation of calcium hydroxide Ca(OH)₂ suspension as water molecules cleave oxide bonds.", action: "View Molecular Model" }
     ],
     observations: [
       "Vigorous hissing bubbling sound is heard as water contacts quicklime.",
-      "The beaker becomes extremely hot to touch (temperature rises dramatically by >50°C).",
+      "The beaker becomes extremely hot (temperature rises dramatically by >50°C).",
       "Lumps disintegrate into a milky white suspension of slaked lime (Ca(OH)₂)."
     ],
     inference: "Quicklime combines with water releasing enormous thermal energy in an exothermic combination reaction: CaO(s) + H₂O(l) → Ca(OH)₂(aq) + Heat.",
     animationType: "combination",
-    safetyLevel: "safe",
+    safetyLevel: "teacher-demo",
     safetyPrecautions: [
-      "Pour water slowly down the beaker side to avoid splashing hot alkaline liquid.",
-      "Do not touch the beaker bottom directly during the peak exothermic phase."
+      "⚠️ High Exothermic Warning: Slaking of quicklime releases boiling heat and can violently splatter caustic alkali.",
+      "Simulated virtually to teach thermodynamics safely."
     ]
   },
   {
     id: "exp-iron-displacement",
     reactionId: "ch1-iron-copper-sulphate-displacement",
-    title: "Displacement of Copper by Iron Nails (Activity 1.9)",
-    apparatus: ["Two Test Tubes", "Test Tube Stand", "Sandpaper", "Thread"],
-    chemicals: ["Iron Nails (clean & rust-free)", "Copper(II) Sulphate (CuSO₄) solution (0.1 M)"],
+    title: "Displacement of Copper by Iron (Activity 1.9)",
+    apparatus: ["Virtual Reaction Chamber", "Colorimeter Sensor", "Substrate Stage"],
+    chemicals: ["Iron Metal (Fe)", "Copper(II) Sulphate (CuSO₄) solution"],
     steps: [
-      { step: 1, title: "Clean Iron Nails", description: "Rub two clean iron nails with emery sandpaper until silvery and shiny.", action: "Polish Nails" },
-      { step: 2, title: "Fill Test Tubes", description: "Take two test tubes (A and B), and fill each with 10 mL of deep blue copper sulphate solution.", action: "Add Blue CuSO₄" },
-      { step: 3, title: "Immersion", description: "Tie one iron nail with a thread and immerse it into test tube A for 20 minutes. Keep tube B as control.", action: "Immerse Iron Nail" },
-      { step: 4, title: "Comparative Observation", description: "Withdraw the nail from tube A and compare its surface and the solution color with tube B.", action: "Compare Results" }
+      { step: 1, title: "Add Virtual Substance", description: "Prepare the virtual beaker with deep blue Copper(II) Sulphate (CuSO₄) solution.", action: "Add Virtual CuSO₄" },
+      { step: 2, title: "Start Simulation", description: "Submerge the virtual metallic iron (Fe) substrate into the blue solution.", action: "Start Simulation" },
+      { step: 3, title: "Observe Colour Change & Deposit", description: "Observe blue solution fading to light green (FeSO₄) while reddish-brown metallic copper coats the iron.", action: "Observe Colour Shift" },
+      { step: 4, title: "View Molecular Explanation", description: "Analyze the single displacement redox mechanism where Fe donates electrons to Cu²⁺ ions.", action: "View Molecular Model" }
     ],
     observations: [
       "Deep blue color of CuSO₄ solution fades gradually to pale light green (FeSO₄).",
-      "A reddish-brown powdery coating of pure metallic copper deposits on the iron nail.",
-      "The control tube B remains vibrant blue."
+      "A reddish-brown powdery coating of pure metallic copper deposits on the iron.",
+      "The control test tube remains vibrant blue."
     ],
     inference: "Iron is more reactive than copper in the reactivity series and displaces Cu²⁺ ions: Fe(s) + CuSO₄(aq) → FeSO₄(aq) + Cu(s).",
     animationType: "displacement",
     safetyLevel: "safe",
     safetyPrecautions: [
-      "Copper sulphate solution is toxic if ingested; avoid contact with broken skin.",
-      "Wash hands thoroughly after handling test solutions."
+      "Safe school-level experiment. Virtual simulation accelerates the 20-minute reaction into an interactive instant visualization."
     ]
   },
   {
     id: "exp-lead-nitrate-precipitation",
-    reactionId: "ch1-lead-nitrate-potassium-iodide",
+    reactionId: "ch1-lead-iodide-precipitation",
     title: "Precipitation of Lead(II) Iodide (Activity 1.2)",
-    apparatus: ["Two 50 mL Beakers / Test Tubes", "Glass Stirring Rod", "Dropper"],
-    chemicals: ["Lead Nitrate solution (colourless)", "Potassium Iodide solution (colourless)"],
+    apparatus: ["Virtual Dual Burettes", "Precipitate Density Detector", "Optical Chamber"],
+    chemicals: ["Lead(II) Nitrate solution [Pb(NO₃)₂]", "Potassium Iodide solution [KI]"],
     steps: [
-      { step: 1, title: "Prepare Lead Nitrate", description: "Take 10 mL of clear, transparent lead nitrate [Pb(NO₃)₂] solution in a test tube.", action: "Pour Pb(NO₃)₂" },
-      { step: 2, title: "Prepare Potassium Iodide", description: "Take 10 mL of clear, transparent potassium iodide (KI) solution in another test tube.", action: "Pour KI" },
-      { step: 3, title: "Mixing Solutions", description: "Slowly add the potassium iodide solution into the lead nitrate test tube.", action: "Mix Solutions" },
-      { step: 4, title: "Observe Instant Precipitation", description: "Witness the instantaneous formation of bright canary-yellow precipitate.", action: "Observe Yellow Solid" }
+      { step: 1, title: "Add Virtual Substance", description: "Select clear, colourless Lead(II) Nitrate [Pb(NO₃)₂] and Potassium Iodide [KI] solutions.", action: "Add Virtual Solutions" },
+      { step: 2, title: "Start Simulation", description: "Combine both transparent liquids into the virtual reaction vessel.", action: "Start Simulation" },
+      { step: 3, title: "Observe Precipitate", description: "Observe the instantaneous appearance of a brilliant canary-yellow precipitate of insoluble Lead(II) Iodide.", action: "Observe Yellow Solid" },
+      { step: 4, title: "View Molecular Explanation", description: "Review mutual ion exchange: Pb²⁺(aq) + 2I⁻(aq) → PbI₂(s)↓ forming an insoluble crystalline network.", action: "View Molecular Model" }
     ],
     observations: [
       "Both starting solutions are completely clear and colourless.",
@@ -120,47 +119,47 @@ export const EXPERIMENTS_DATABASE: Experiment[] = [
     animationType: "precipitation",
     safetyLevel: "teacher-demo",
     safetyPrecautions: [
-      "Lead salts are toxic heavy metals; handle under teacher supervision and do not pour down common drains.",
-      "Dispose of lead waste in designated chemical hazardous waste container."
+      "⚠️ Heavy Metal Caution: Lead compounds are toxic and environmentally hazardous.",
+      "This simulation provides safe, zero-waste discovery of double-displacement precipitation."
     ]
   },
   {
     id: "exp-ferrous-sulphate-decomposition",
     reactionId: "ch1-ferrous-sulphate-decomposition",
-    title: "Thermal Decomposition of Ferrous Sulphate Crystals (Activity 1.5)",
-    apparatus: ["Boiling Tube", "Boiling Tube Holder", "Bunsen Burner", "Moist Blue Litmus Paper"],
-    chemicals: ["Green Ferrous Sulphate Crystals (FeSO₄·7H₂O)"],
+    title: "Thermal Decomposition of Ferrous Sulphate (Activity 1.5)",
+    apparatus: ["Virtual Pyrex Tube", "Thermal Heating Coil", "Gas Chromatography Sensor"],
+    chemicals: ["Ferrous Sulphate Heptahydrate crystals (FeSO₄·7H₂O)"],
     steps: [
-      { step: 1, title: "Load Boiling Tube", description: "Take about 2 g of light green ferrous sulphate crystals in a dry Pyrex boiling tube.", action: "Load Crystals" },
-      { step: 2, title: "Hold with Test Tube Holder", description: "Grip the boiling tube firmly with a tube holder, pointing the mouth away from all persons.", action: "Point Safely" },
-      { step: 3, title: "Gentle then Strong Heating", description: "Heat gently first over the flame, then heat strongly.", action: "Apply Heat" },
-      { step: 4, title: "Waif Gas Vapours", description: "Gently waft the emitted gas toward the nose to detect the characteristic smell of burning sulphur.", action: "Waft Gas" }
+      { step: 1, title: "Add Virtual Substance", description: "Place pale green Ferrous Sulphate crystals (FeSO₄·7H₂O) into the virtual boiling tube.", action: "Add Virtual FeSO₄" },
+      { step: 2, title: "Start Simulation", description: "Apply high heat to initiate dehydration followed by thermal chemical decomposition.", action: "Start Simulation" },
+      { step: 3, title: "Observe Colour Change & Gas Evolution", description: "Observe crystals turning white then dark reddish-brown (Fe₂O₃), emitting choking SO₂ and SO₃ gases.", action: "Observe Gas Evolution" },
+      { step: 4, title: "View Molecular Explanation", description: "Examine single-compound thermal breakdown into three products: Fe₂O₃(s) + SO₂(g) + SO₃(g).", action: "View Molecular Model" }
     ],
     observations: [
       "Light green crystals first lose water of crystallization, turning white (anhydrous FeSO₄).",
       "On further strong heating, solid turns dark reddish-brown (Ferric Oxide, Fe₂O₃).",
       "Choking, pungent fumes with the characteristic smell of burning sulphur (SO₂ & SO₃) are evolved.",
-      "Moist blue litmus paper held at the mouth turns red, proving acidic nature of sulphur gases."
+      "Acidic sulphur gases turn virtual moist blue litmus paper red."
     ],
-    inference: "Single compound decomposes on heating into three simpler substances: 2FeSO₄(s) --Δ→ Fe₂O₃(s) + SO₂(g) + SO₃(g).",
+    inference: "Single compound decomposes on heating into three simpler substances: 2FeSO₄(s) —(Heat)→ Fe₂O₃(s) + SO₂(g) + SO₃(g).",
     animationType: "decomposition",
-    safetyLevel: "teacher-demo",
+    safetyLevel: "simulation-only",
     safetyPrecautions: [
-      "Never point the mouth of the boiling tube towards yourself or your lab partner.",
-      "Sulphur dioxide and trioxide gases are irritating to respiratory tract; waft gently and never inhale deeply."
+      "⚠️ SIMULATION-ONLY: Sulphur dioxide and sulphur trioxide fumes are toxic and severely irritate the respiratory system.",
+      "Physical execution requires a laboratory fume extraction hood; safe for interactive conceptual study in this virtual environment."
     ]
   },
   {
     id: "exp-zinc-acid-hydrogen",
-    reactionId: "ch1-zinc-granules-h2so4",
-    title: "Action of Dilute Acid on Zinc Granules (Activity 1.3 / Activity 2.3)",
-    apparatus: ["Conical Flask", "Delivery Tube", "Soap Bubble Trough", "Burning Splinter", "Cork with single bore"],
-    chemicals: ["Granulated Zinc metal", "Dilute Sulphuric Acid (H₂SO₄) / Hydrochloric Acid (HCl)", "Soap Solution"],
+    reactionId: "ch2-zinc-acid-hydrogen",
+    title: "Action of Dilute Acid on Zinc Granules (Activity 1.3 / 2.3)",
+    apparatus: ["Virtual Conical Flask", "Gas Collection Tube", "Acoustic Pop-Detector"],
+    chemicals: ["Granulated Zinc Metal (Zn)", "Dilute Sulphuric Acid (H₂SO₄)"],
     steps: [
-      { step: 1, title: "Place Zinc Granules", description: "Add a few pieces of granulated zinc into a clean 100 mL conical flask.", action: "Add Zinc" },
-      { step: 2, title: "Add Dilute Acid", description: "Pour 10 mL of dilute sulphuric acid over the zinc granules and fit the cork with delivery tube.", action: "Pour Dilute Acid" },
-      { step: 3, title: "Observe Effervescence", description: "Brisk effervescence begins immediately as tiny colourless gas bubbles coat the zinc.", action: "Observe Bubbles" },
-      { step: 4, title: "Pop Sound Test", description: "Pass gas through soap water and bring a burning candle near the soap bubbles filled with gas.", action: "Test with Flame" }
+      { step: 1, title: "Add Virtual Substance", description: "Select metallic Zinc (Zn) granules and load into the virtual reaction flask.", action: "Add Virtual Zinc" },
+      { step: 2, title: "Start Simulation", description: "Introduce dilute acid into the chamber to begin single displacement.", action: "Start Simulation" },
+      { step: 3, title: "Observe Gas Evolution & Acoustic Pop", description: "Observe brisk effervescence of hydrogen bubbles; activate acoustic test to trigger characteristic 'POP' sound.", action: "Observe Effervescence" },
+      { step: 4, title: "View Molecular Explanation", description: "Track electron transfer from zinc atoms to hydrogen ions: Zn + 2H⁺ → Zn²⁺ + H₂↑.", action: "View Molecular Model" }
     ],
     observations: [
       "Brisk effervescence with rapid stream of colourless, odourless gas bubbles.",
@@ -169,10 +168,10 @@ export const EXPERIMENTS_DATABASE: Experiment[] = [
     ],
     inference: "Active metal displaces hydrogen from dilute mineral acids: Zn(s) + H₂SO₄(aq) → ZnSO₄(aq) + H₂(g)↑.",
     animationType: "displacement",
-    safetyLevel: "safe",
+    safetyLevel: "teacher-demo",
     safetyPrecautions: [
-      "Keep flame at least 30 cm away from the reaction flask; test only small soap bubbles with candle flame.",
-      "Always handle dilute acid with care and use droppers."
+      "⚠️ Flammable Gas Hazard: Hydrogen forms explosive mixtures with atmospheric oxygen.",
+      "Virtual simulation allows students to safely observe effervescence and acoustic pop testing."
     ]
   }
 ];

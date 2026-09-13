@@ -222,6 +222,34 @@ export interface DiscoveryReactionResult {
   };
 }
 
+export interface DiscoveryRule {
+  id: string;
+  reactionId?: string;
+  title: string;
+  reactants: string[];
+  requiresHeat?: boolean;
+  requiresWater?: boolean;
+  matches: (
+    substanceSet: Set<string>,
+    conditions: {
+      heat: boolean;
+      water: boolean;
+      testedWithSplinter?: boolean;
+      testedWithLimeWater?: boolean;
+    },
+    count: number
+  ) => boolean;
+  getResult: (
+    substanceSet: Set<string>,
+    conditions: {
+      heat: boolean;
+      water: boolean;
+      testedWithSplinter?: boolean;
+      testedWithLimeWater?: boolean;
+    }
+  ) => DiscoveryReactionResult;
+}
+
 export interface ChemistryChallenge {
   id: string;
   title: string;

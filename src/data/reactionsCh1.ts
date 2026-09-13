@@ -36,9 +36,9 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Why should a magnesium ribbon be cleaned before burning in air? (Ans: To remove the protective coating of basic magnesium carbonate)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Clean magnesium ribbon with sandpaper and hold with tongs over burner." },
-      { step: 2, description: "Magnesium ignites with a dazzling white flame as oxygen reacts." },
-      { step: 3, description: "Collect the white ash (Magnesium Oxide, MgO) in a watch glass." }
+      { step: 1, description: "Add virtual substance: Select cleaned metallic Magnesium ribbon (Mg) on the workbench." },
+      { step: 2, description: "Start simulation: Virtual ignition triggers oxidation with atmospheric oxygen." },
+      { step: 3, description: "Observe luminescence: Dazzling white flame produces white Magnesium Oxide (MgO) ash." }
     ],
     interactiveEntities: [
       { formula: "Mg", name: "Magnesium Ribbon", role: "reactant", state: "s", color: "#94a3b8", ncertNote: "Silvery-white active metal" },
@@ -100,10 +100,10 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     ],
     explanation: "Calcium oxide (quicklime) vigorously combines with water to produce calcium hydroxide (slaked lime), releasing a huge quantity of thermal energy.",
     molecularExplanation: "The Ca²⁺ and O²⁻ in solid CaO react with polar H₂O molecules, breaking H-O bonds to form hydrated Ca²⁺ and 2 OH⁻ ions.",
-    experimentMode: "safe",
+    experimentMode: "teacher-demo",
     safetyNotes: [
-      "Always add water slowly down the sides.",
-      "Do not touch the beaker bottom directly with bare hands during peak reaction due to high heat."
+      "⚠️ Exothermic Warning: Slaking of quicklime releases intense boiling heat and can splatter caustic alkali.",
+      "Simulated safely on screen to observe thermodynamics without burns."
     ],
     realLifeApplications: [
       "Preparation of whitewash for buildings.",
@@ -115,9 +115,9 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Write a balanced equation for the reaction of substance 'X' used for whitewashing with water. (Ans: CaO + H₂O → Ca(OH)₂)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Add solid white quicklime (CaO) lumps to the beaker." },
-      { step: 2, description: "Pour water into the beaker; vigorous hissing commences." },
-      { step: 3, description: "Water heats up rapidly and slaked lime solution forms." }
+      { step: 1, description: "Add virtual substance: Place solid Quicklime (CaO) lumps into the virtual beaker." },
+      { step: 2, description: "Start simulation: Introduce virtual water to trigger exothermic hydration." },
+      { step: 3, description: "Observe exothermic change: High heat surge, steam evolution, and formation of slaked lime Ca(OH)₂ suspension." }
     ],
     interactiveEntities: [
       { formula: "CaO", name: "Calcium Oxide (Quicklime)", role: "reactant", state: "s", color: "#e2e8f0", ncertNote: "Substance 'X' used in whitewashing" },
@@ -221,10 +221,10 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     ],
     explanation: "Ferrous sulphate crystals lose 7 water molecules of crystallisation on mild heating. On strong heating, anhydrous FeSO₄ thermally decomposes into ferric oxide, sulphur dioxide, and sulphur trioxide.",
     molecularExplanation: "High thermal energy breaks the Fe-SO₄ ionic bond lattice. Fe(II) oxidizes to Fe(III) while some S(VI) reduces to S(IV) in SO₂.",
-    experimentMode: "teacher-demo",
+    experimentMode: "simulation-only",
     safetyNotes: [
-      "Do NOT inhale fumes directly; waft gas gently towards your nose with hand.",
-      "Never point the boiling tube mouth towards yourself or classmates."
+      "⚠️ SIMULATION-ONLY: Sulphur dioxide and sulphur trioxide are toxic, choking gases that irritate the respiratory tract.",
+      "Physical experiment requires a chemical fume hood; safely simulated in the virtual lab without toxic inhalation hazard."
     ],
     realLifeApplications: ["Production of iron oxide pigments for paints and ceramic coloring."],
     ncertConcept: "Activity 1.5: Thermal decomposition of a single reactant into three simpler products with characteristic gas odor.",
@@ -233,9 +233,9 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Name the gases evolved when ferrous sulphate crystals are heated. How are they identified? (Ans: SO₂ and SO₃, recognized by burning sulphur smell)",
     energyChange: "Endothermic",
     animationSteps: [
-      { step: 1, description: "Place pale green FeSO₄·7H₂O crystals in a dry boiling tube." },
-      { step: 2, description: "Heat over flame; water droplets condense on tube walls as crystals whiten." },
-      { step: 3, description: "Strong heat produces reddish-brown Fe₂O₃ and suffocating SO₂/SO₃ gases." }
+      { step: 1, description: "Add virtual substance: Place pale green FeSO₄·7H₂O crystals in the virtual boiling tube." },
+      { step: 2, description: "Start simulation: Apply high heat to induce thermal breakdown." },
+      { step: 3, description: "Observe colour change & gas evolution: Green turns white then reddish-brown Fe₂O₃ with choking SO₂ and SO₃ gases." }
     ],
     interactiveEntities: [
       { formula: "FeSO₄", name: "Ferrous Sulphate", role: "reactant", state: "s", color: "#86efac", ncertNote: "Pale green crystals" },
@@ -342,10 +342,10 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     ],
     explanation: "Lead nitrate decomposes under heat into lead monoxide (yellow), nitrogen dioxide (brown acidic gas), and colorless oxygen gas which rekindles a glowing splint.",
     molecularExplanation: "Nitrate groups (NO₃⁻) decompose under thermal stress; electrons transfer to form NO₂ molecules and O₂ while Pb²⁺ forms ionic PbO.",
-    experimentMode: "teacher-demo",
+    experimentMode: "simulation-only",
     safetyNotes: [
-      "NO₂ gas is toxic and irritating to the respiratory tract. Must be performed in a fume hood or well-ventilated lab.",
-      "Never sniff the brown fumes directly."
+      "⚠️ SIMULATION-ONLY: Nitrogen dioxide (NO₂) fumes are toxic and severely irritate the lungs. Lead(II) oxide is a heavy-metal poison.",
+      "Physical execution requires dedicated fume extraction; safely demonstrated virtually with accurate color and decrepitation physics."
     ],
     realLifeApplications: ["Synthesis of lead pigments and analytical chemistry."],
     ncertConcept: "Activity 1.6: Observation of brown nitrogen dioxide fumes upon heating lead nitrate.",
@@ -354,9 +354,9 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Name the brown fumes produced when lead nitrate is heated in a boiling tube. (Ans: Nitrogen dioxide, NO₂)",
     energyChange: "Endothermic",
     animationSteps: [
-      { step: 1, description: "Add white lead nitrate powder into a dry boiling tube." },
-      { step: 2, description: "Heat over flame with tongs; crackling sounds begin." },
-      { step: 3, description: "Dense reddish-brown fumes of NO₂ emerge; yellow PbO coats the tube." }
+      { step: 1, description: "Add virtual substance: Load white crystalline Lead(II) Nitrate [Pb(NO₃)₂] in virtual tube." },
+      { step: 2, description: "Start simulation: Heat strongly to initiate decrepitation and thermal decomposition." },
+      { step: 3, description: "Observe gas evolution & residue: Brown fumes of nitrogen dioxide (NO₂) and yellow lead monoxide (PbO) residue." }
     ],
     interactiveEntities: [
       { formula: "Pb(NO₃)₂", name: "Lead Nitrate", role: "reactant", state: "s", color: "#f8fafc", ncertNote: "White crystalline powder" },
@@ -417,10 +417,10 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     ],
     explanation: "Electric current breaks covalent bonds in water molecules. Hydrogen ions (H⁺) reduce at cathode to H₂ gas; hydroxide ions (OH⁻) oxidize at anode to release O₂ gas. Volume ratio is 2:1 according to stoichiometry.",
     molecularExplanation: "Two H₂O molecules yield two H₂ molecules and one O₂ molecule (2:1 molar and volumetric ratio by Avogadro's law).",
-    experimentMode: "safe",
+    experimentMode: "teacher-demo",
     safetyNotes: [
-      "Use low DC voltage (6V battery); never use AC household mains power.",
-      "Hydrogen test with burning splint should be done with minimal gas sample."
+      "⚠️ Electrical & Gas Safety: Requires low voltage DC to prevent electrical hazards. Hydrogen-oxygen mixtures are explosive.",
+      "Virtual simulation allows precise quantitative gas ratio measurement without high electrical currents."
     ],
     realLifeApplications: ["Green hydrogen fuel generation for clean energy cells."],
     ncertConcept: "Activity 1.7: Electrolytic decomposition demonstrating chemical decomposition using electrical energy.",
@@ -429,9 +429,9 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Why is the volume of gas collected in one test tube during water electrolysis double of the other? (Ans: Water contains 2 parts hydrogen to 1 part oxygen by volume)",
     energyChange: "Endothermic",
     animationSteps: [
-      { step: 1, description: "Immerse carbon electrodes in acidified water connected to 6V battery." },
-      { step: 2, description: "Switch on current: vigorous bubbling starts at both electrodes." },
-      { step: 3, description: "Cathode tube fills with 2 volumes of H₂; anode collects 1 volume of O₂." }
+      { step: 1, description: "Add virtual substance: Place acidified water electrolyte in the virtual Hofmann voltmeter." },
+      { step: 2, description: "Start simulation: Energize DC circuit to initiate electrolytic decomposition." },
+      { step: 3, description: "Observe gas evolution: 2 volumes of H₂ gas collect at cathode, 1 volume of O₂ gas at anode." }
     ],
     interactiveEntities: [
       { formula: "H₂O", name: "Acidified Water", role: "reactant", state: "l", color: "#38bdf8" },
@@ -547,9 +547,9 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Why does the blue colour of copper sulphate solution fade when an iron nail is dipped into it? (Ans: Iron displaces copper forming pale green ferrous sulphate)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Fill test tube with sparkling blue 1M copper sulphate (CuSO₄) solution." },
-      { step: 2, description: "Tie clean grey iron nail with thread and lower it into the blue solution." },
-      { step: 3, description: "After 20 mins, solution turns pale green; nail is coated in reddish-brown copper." }
+      { step: 1, description: "Add virtual substance: Prepare virtual beaker with deep blue Copper(II) Sulphate (CuSO₄) solution." },
+      { step: 2, description: "Start simulation: Lower metallic iron (Fe) into the copper sulphate solution." },
+      { step: 3, description: "Observe colour change & deposit: Solution turns pale green (FeSO₄) with reddish-brown copper coating on the iron." }
     ],
     interactiveEntities: [
       { formula: "Fe", name: "Iron Nail", role: "reactant", state: "s", color: "#64748b", ncertNote: "More reactive metal (higher in series)" },
@@ -727,9 +727,9 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     commonBoardQuestion: "A shiny brown coloured element 'X' on heating in air becomes black in colour. Name 'X' and the black compound. (Ans: 'X' is Copper Cu, black compound is Copper(II) Oxide CuO)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Spread reddish-brown copper powder on china dish over burner." },
-      { step: 2, description: "Heat strongly in atmospheric air." },
-      { step: 3, description: "Surface turns completely jet black due to formation of CuO." }
+      { step: 1, description: "Add virtual substance: Spread reddish-brown copper powder on the virtual dish." },
+      { step: 2, description: "Start simulation: Apply thermal energy in the presence of atmospheric oxygen." },
+      { step: 3, description: "Observe colour change: Surface oxidizes to jet black Copper(II) Oxide (CuO)." }
     ],
     interactiveEntities: [
       { formula: "Cu", name: "Copper Powder", role: "reactant", state: "s", color: "#b45309", ncertNote: "Shiny reddish-brown metal" },

@@ -21,10 +21,10 @@ export const CHAPTER_2_REACTIONS: Reaction[] = [
     ],
     explanation: "Zinc is more electropositive than hydrogen in the activity series. Zinc displaces hydrogen from dilute sulphuric acid, forming zinc sulphate salt and hydrogen gas.",
     molecularExplanation: "Zn atom donates two electrons: Zn → Zn²⁺ + 2e⁻. Two H⁺ ions from dissociated H₂SO₄ capture these electrons: 2H⁺ + 2e⁻ → H₂(g).",
-    experimentMode: "safe",
+    experimentMode: "teacher-demo",
     safetyNotes: [
-      "Handle dilute sulphuric acid with care.",
-      "Always use a soap solution reservoir to collect bubbles before igniting with candle."
+      "⚠️ Flammable Gas Warning: Hydrogen gas forms explosive mixtures with air.",
+      "Safely simulated on screen with acoustic pop-sound feedback."
     ],
     realLifeApplications: ["Industrial production of zinc salts and laboratory generation of hydrogen."],
     ncertConcept: "Activity 2.3 & Figure 2.1: General rule: Acid + Metal → Salt + Hydrogen gas.",
@@ -33,9 +33,9 @@ export const CHAPTER_2_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Which gas is evolved when dilute acid reacts with a metal? How do you test for it? (Ans: Hydrogen gas; tested by bringing a burning candle which extinguishes with a 'pop' sound)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Add granulated zinc metal pieces into the conical flask." },
-      { step: 2, description: "Pour dilute H₂SO₄; bubbles immediately swarm around the zinc granules." },
-      { step: 3, description: "Direct evolved gas through soap solution; bubbles burst with a 'pop' under candle flame." }
+      { step: 1, description: "Add virtual substance: Place metallic Zinc (Zn) granules into the virtual conical flask." },
+      { step: 2, description: "Start simulation: Introduce dilute sulphuric acid to initiate single displacement." },
+      { step: 3, description: "Observe gas evolution & pop sound: Brisk effervescence of H₂; soap bubble burst test yields characteristic 'POP' sound." }
     ],
     interactiveEntities: [
       { formula: "Zn", name: "Zinc Granules", role: "reactant", state: "s", color: "#94a3b8", ncertNote: "Active amphoteric metal" },
@@ -101,9 +101,9 @@ export const CHAPTER_2_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Write the balanced chemical equation for the reaction of zinc metal with sodium hydroxide solution. (Ans: Zn + 2NaOH → Na₂ZnO₂ + H₂)",
     energyChange: "Endothermic",
     animationSteps: [
-      { step: 1, description: "Place granulated zinc pieces in a test tube." },
-      { step: 2, description: "Add 2 mL of sodium hydroxide solution and warm gently over a flame." },
-      { step: 3, description: "Hydrogen gas bubbles evolve, producing sodium zincate." }
+      { step: 1, description: "Add virtual substance: Select Zinc (Zn) granules and concentrated NaOH solution." },
+      { step: 2, description: "Start simulation: Apply gentle warming to initiate alkaline displacement." },
+      { step: 3, description: "Observe gas evolution: Hydrogen gas evolves, forming clear sodium zincate Na₂ZnO₂ solution." }
     ],
     interactiveEntities: [
       { formula: "Zn", name: "Zinc Granules", role: "reactant", state: "s", color: "#94a3b8" },

@@ -134,8 +134,11 @@ export const CHAPTER_3_REACTIONS: Reaction[] = [
     ],
     explanation: "Calcium is less reactive than sodium. The reaction produces calcium hydroxide and hydrogen gas, but the energy release does not ignite the gas.",
     molecularExplanation: "Ca loses 2 electrons to form Ca²⁺; sticking H₂ gas bubbles decrease the effective density of the calcium metal chunks.",
-    experimentMode: "safe",
-    safetyNotes: ["Safe classroom demonstration."],
+    experimentMode: "teacher-demo",
+    safetyNotes: [
+      "⚠️ Exothermic & Caustic Warning: Produces flammable hydrogen gas and caustic calcium hydroxide solution.",
+      "Safely visualized in virtual lab with density-buoyancy physics."
+    ],
     realLifeApplications: ["Production of slaked lime and calcium salts."],
     ncertConcept: "Section 3.2.2: Explanation of why calcium starts floating when dropped in water.",
     tags: ["Calcium", "Cold Water", "Floats", "H₂ Bubbles", "Board Favorite"],
@@ -143,9 +146,9 @@ export const CHAPTER_3_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Why does calcium start floating when treated with water? (Ans: Bubbles of hydrogen gas stick to its surface)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Drop grey calcium granules into water beaker; they sink to the bottom." },
-      { step: 2, description: "Steady hydrogen gas bubbles begin forming on the metal surface." },
-      { step: 3, description: "Adhering H₂ bubbles lift the calcium metal to the surface, making it float." }
+      { step: 1, description: "Add virtual substance: Select solid Calcium (Ca) granules and add to water vessel." },
+      { step: 2, description: "Start simulation: Water contacts calcium, initiating single displacement." },
+      { step: 3, description: "Observe gas evolution & floating: Adhering H₂ bubbles impart buoyancy, lifting the calcium metal chunks to float on the surface." }
     ],
     interactiveEntities: [
       { formula: "Ca", name: "Calcium Metal", role: "reactant", state: "s", color: "#94a3b8" },
@@ -185,9 +188,10 @@ export const CHAPTER_3_REACTIONS: Reaction[] = [
     ],
     explanation: "Iron does not react with cold or hot water, but reacts with steam when heated red hot to produce mixed iron oxide (Fe₃O₄ = FeO·Fe₂O₃) and hydrogen gas.",
     molecularExplanation: "High kinetic energy steam molecules break on red-hot Fe surface, donating oxygen to form Fe₃O₄ lattice and releasing H₂ gas.",
-    experimentMode: "teacher-demo",
+    experimentMode: "simulation-only",
     safetyNotes: [
-      "Remove the delivery tube from water before taking away burner to prevent cold water back-suction and tube cracking."
+      "⚠️ SIMULATION-ONLY: Red-hot iron tube with high-pressure steam creates thermal shock and back-suction hazards.",
+      "Safely demonstrated in virtual lab without pressurized glassware risks."
     ],
     realLifeApplications: ["Lane's process for commercial manufacture of hydrogen gas."],
     ncertConcept: "Figure 3.3 & Section 3.2.2: Action of steam on metals like Fe, Al, Zn.",
@@ -196,9 +200,9 @@ export const CHAPTER_3_REACTIONS: Reaction[] = [
     commonBoardQuestion: "Write a balanced chemical equation for the reaction of iron with steam. Name the oxide formed. (Ans: 3Fe + 4H₂O(g) → Fe₃O₄ + 4H₂; Magnetic oxide of iron / iron(II,III) oxide)",
     energyChange: "Exothermic",
     animationSteps: [
-      { step: 1, description: "Heat wet glass-wool to generate continuous stream of steam." },
-      { step: 2, description: "Steam passes over red-hot iron sample inside the glass combustion tube." },
-      { step: 3, description: "Black Fe₃O₄ forms on iron while H₂ gas is collected over water trough." }
+      { step: 1, description: "Add virtual substance: Select metallic iron turnings in the virtual combustion tube." },
+      { step: 2, description: "Start simulation: Pass superheated steam stream over red-hot iron." },
+      { step: 3, description: "Observe colour change & gas collection: Black magnetic oxide Fe₃O₄ coats the iron while H₂ gas is collected." }
     ],
     interactiveEntities: [
       { formula: "Fe", name: "Iron Turnings", role: "reactant", state: "s", color: "#64748b" },
@@ -291,17 +295,20 @@ export const CHAPTER_3_REACTIONS: Reaction[] = [
     ],
     explanation: "Carbonate ores are changed into oxides by heating strongly in limited or no air (Calcination). The oxide is then reduced by carbon to metal.",
     molecularExplanation: "ZnCO₃ decomposes thermally: ZnCO₃(s) → ZnO(s) + CO₂(g).",
-    experimentMode: "safe",
-    safetyNotes: ["Safe simulation."],
+    experimentMode: "simulation-only",
+    safetyNotes: [
+      "⚠️ High Temperature Metallurgy: Industrial pyrometallurgical calcination above 800°C.",
+      "Safely demonstrated via virtual simulation."
+    ],
     realLifeApplications: ["Extraction of zinc from calamine ore."],
     ncertConcept: "Section 3.4.4: Calcination for carbonate ores.",
     tags: ["Calcination", "ZnCO₃", "Limited Air", "Calamine", "Board Favorite"],
     boardImportance: "Very High",
     energyChange: "Endothermic",
     animationSteps: [
-      { step: 1, description: "Load zinc carbonate (calamine) in a closed retort." },
-      { step: 2, description: "Heat strongly in limited air; thermal breakdown begins." },
-      { step: 3, description: "Solid zinc oxide residue forms and CO₂ escapes." }
+      { step: 1, description: "Add virtual substance: Load white Calamine (ZnCO₃) ore powder into virtual retort." },
+      { step: 2, description: "Start simulation: Apply high heat in limited air supply to trigger calcination." },
+      { step: 3, description: "Observe gas evolution & residue: CO₂ escapes, leaving zinc oxide residue (yellow when hot, white when cold)." }
     ],
     interactiveEntities: [
       { formula: "ZnCO₃", name: "Zinc Carbonate (Calamine)", role: "reactant", state: "s", color: "#f1f5f9" },
