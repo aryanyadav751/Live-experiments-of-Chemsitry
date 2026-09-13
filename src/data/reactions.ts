@@ -11,6 +11,8 @@ export const REACTIONS: Reaction[] = [
   ...CHAPTER_4_REACTIONS
 ];
 
+export const ALL_REACTIONS = REACTIONS;
+
 export const ALL_REACTION_CATEGORIES: ReactionCategory[] = [
   "Combination",
   "Decomposition",

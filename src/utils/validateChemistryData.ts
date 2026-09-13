@@ -310,6 +310,24 @@ export function auditChemistryData(): AuditReport {
     if (!r.observations || r.observations.length === 0) errors.push(`Reaction "${r.id}" has empty observations.`);
     if (!r.explanation || r.explanation.trim() === "") errors.push(`Reaction "${r.id}" has empty explanation.`);
     if (!r.molecularExplanation || r.molecularExplanation.trim() === "") errors.push(`Reaction "${r.id}" has empty molecularExplanation.`);
+
+    // Quiz validation
+    if (r.quiz && r.quiz.length > 0) {
+      r.quiz.forEach((q, qIdx) => {
+        if (!q.question || q.question.trim() === "") {
+          errors.push(`Reaction "${r.id}" quiz question #${qIdx + 1} has empty question text.`);
+        }
+        if (!q.options || q.options.length < 2) {
+          errors.push(`Reaction "${r.id}" quiz question #${qIdx + 1} must have at least 2 options.`);
+        }
+        if (!q.options.includes(q.answer)) {
+          errors.push(`Reaction "${r.id}" quiz question #${qIdx + 1} answer "${q.answer}" is NOT among the provided options: [${q.options.join(", ")}].`);
+        }
+        if (!q.explanation || q.explanation.trim() === "") {
+          errors.push(`Reaction "${r.id}" quiz question #${qIdx + 1} has empty explanation.`);
+        }
+      });
+    }
   }
 
   // 2. Audit Experiments Database

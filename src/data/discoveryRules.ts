@@ -25,14 +25,14 @@ export const DISCOVERY_RULES: DiscoveryRule[] = [
       observations: [
         "Pale green crystals lose water of crystallization to turn dirty white.",
         "On strong heating, the residue turns reddish-brown solid (Ferric oxide, Fe₂O₃).",
-        "Evolution of choking gases having the characteristic burning sulphur odor (SO₂ & SO₃)."
+        "Gases are evolved during thermal decomposition (SO₂ & SO₃)."
       ],
       explanation:
         "Single reactant breaks down upon heating into ferric oxide solid and acidic gases sulphur dioxide and sulphur trioxide (NCERT Activity 1.5).",
       energyChange: "Endothermic",
       isHazardous: true,
       simulationSafetyNote:
-        "⚠️ Virtual Simulation Notice: Sulphur dioxide (SO₂) gas is choking and harmful to inhale. Simulated safely without exposure.",
+        "⚠️ Simulation-only / teacher demonstration. Note: The gases are represented visually in this simulation. Do not attempt to identify reaction gases by smell.",
       visualEffect: {
         color: "#78350f",
         hasBubbles: true,

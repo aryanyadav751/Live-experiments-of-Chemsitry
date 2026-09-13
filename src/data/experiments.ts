@@ -127,26 +127,27 @@ export const EXPERIMENTS_DATABASE: Experiment[] = [
     id: "exp-ferrous-sulphate-decomposition",
     reactionId: "ch1-ferrous-sulphate-decomposition",
     title: "Thermal Decomposition of Ferrous Sulphate (Activity 1.5)",
-    apparatus: ["Virtual Pyrex Tube", "Thermal Heating Coil", "Gas Chromatography Sensor"],
+    apparatus: ["Virtual Pyrex Tube", "Thermal Heating Coil", "Digital Sensor View"],
     chemicals: ["Ferrous Sulphate Heptahydrate crystals (FeSO₄·7H₂O)"],
     steps: [
       { step: 1, title: "Add Virtual Substance", description: "Place pale green Ferrous Sulphate crystals (FeSO₄·7H₂O) into the virtual boiling tube.", action: "Add Virtual FeSO₄" },
-      { step: 2, title: "Start Simulation", description: "Apply high heat to initiate dehydration followed by thermal chemical decomposition.", action: "Start Simulation" },
-      { step: 3, title: "Observe Colour Change & Gas Evolution", description: "Observe crystals turning white then dark reddish-brown (Fe₂O₃), emitting choking SO₂ and SO₃ gases.", action: "Observe Gas Evolution" },
+      { step: 2, title: "Start Simulation", description: "Apply high heat virtually to initiate dehydration followed by thermal chemical decomposition.", action: "Start Simulation" },
+      { step: 3, title: "Observe Colour Change & Gas Evolution", description: "Observe crystals turning white then dark reddish-brown (Fe₂O₃) as gases evolve during thermal decomposition.", action: "Observe Gas Evolution" },
       { step: 4, title: "View Molecular Explanation", description: "Examine single-compound thermal breakdown into three products: Fe₂O₃(s) + SO₂(g) + SO₃(g).", action: "View Molecular Model" }
     ],
     observations: [
       "Light green crystals first lose water of crystallization, turning white (anhydrous FeSO₄).",
       "On further strong heating, solid turns dark reddish-brown (Ferric Oxide, Fe₂O₃).",
-      "Choking, pungent fumes with the characteristic smell of burning sulphur (SO₂ & SO₃) are evolved.",
+      "Gases are evolved during thermal decomposition (SO₂ and SO₃).",
       "Acidic sulphur gases turn virtual moist blue litmus paper red."
     ],
     inference: "Single compound decomposes on heating into three simpler substances: 2FeSO₄(s) —(Heat)→ Fe₂O₃(s) + SO₂(g) + SO₃(g).",
     animationType: "decomposition",
     safetyLevel: "simulation-only",
     safetyPrecautions: [
-      "⚠️ SIMULATION-ONLY: Sulphur dioxide and sulphur trioxide fumes are toxic and severely irritate the respiratory system.",
-      "Physical execution requires a laboratory fume extraction hood; safe for interactive conceptual study in this virtual environment."
+      "⚠️ Simulation-only / teacher demonstration.",
+      "Note: The gases are represented visually in this simulation. Do not attempt to identify reaction gases by smell.",
+      "Sulphur dioxide and sulphur trioxide are toxic, choking gases that irritate the respiratory system; physical demonstration requires a chemical fume hood."
     ]
   },
   {

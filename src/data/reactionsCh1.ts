@@ -217,25 +217,26 @@ export const CHAPTER_1_REACTIONS: Reaction[] = [
     observations: [
       "Green ferrous sulphate heptahydrate crystals (FeSO₄·7H₂O) first lose water and turn white.",
       "On further strong heating, the white residue turns reddish-brown (ferric oxide, Fe₂O₃).",
-      "Pungent, choking smell of burning sulphur due to SO₂ and SO₃ gases evolved."
+      "Gases are evolved during thermal decomposition (SO₂ and SO₃)."
     ],
     explanation: "Ferrous sulphate crystals lose 7 water molecules of crystallisation on mild heating. On strong heating, anhydrous FeSO₄ thermally decomposes into ferric oxide, sulphur dioxide, and sulphur trioxide.",
     molecularExplanation: "High thermal energy breaks the Fe-SO₄ ionic bond lattice. Fe(II) oxidizes to Fe(III) while some S(VI) reduces to S(IV) in SO₂.",
     experimentMode: "simulation-only",
     safetyNotes: [
-      "⚠️ SIMULATION-ONLY: Sulphur dioxide and sulphur trioxide are toxic, choking gases that irritate the respiratory tract.",
-      "Physical experiment requires a chemical fume hood; safely simulated in the virtual lab without toxic inhalation hazard."
+      "⚠️ Simulation-only / teacher demonstration.",
+      "Note: The gases are represented visually in this simulation. Do not attempt to identify reaction gases by smell.",
+      "Sulphur dioxide and sulphur trioxide are toxic, choking gases that irritate the respiratory tract; physical demonstration requires a chemical fume hood."
     ],
     realLifeApplications: ["Production of iron oxide pigments for paints and ceramic coloring."],
     ncertConcept: "Activity 1.5: Thermal decomposition of a single reactant into three simpler products with characteristic gas odor.",
-    tags: ["FeSO₄", "Thermal Decomposition", "Activity 1.5", "Sulphur Smell"],
+    tags: ["FeSO₄", "Thermal Decomposition", "Activity 1.5", "Sulphur Gases"],
     boardImportance: "Very High",
-    commonBoardQuestion: "Name the gases evolved when ferrous sulphate crystals are heated. How are they identified? (Ans: SO₂ and SO₃, recognized by burning sulphur smell)",
+    commonBoardQuestion: "Name the gases evolved when ferrous sulphate crystals are heated. How are they identified? (Ans: SO₂ and SO₃, recognized by burning sulphur odor)",
     energyChange: "Endothermic",
     animationSteps: [
       { step: 1, description: "Add virtual substance: Place pale green FeSO₄·7H₂O crystals in the virtual boiling tube." },
       { step: 2, description: "Start simulation: Apply high heat to induce thermal breakdown." },
-      { step: 3, description: "Observe colour change & gas evolution: Green turns white then reddish-brown Fe₂O₃ with choking SO₂ and SO₃ gases." }
+      { step: 3, description: "Observe colour change & gas evolution: Green turns white then reddish-brown Fe₂O₃ as gases evolve during thermal decomposition." }
     ],
     interactiveEntities: [
       { formula: "FeSO₄", name: "Ferrous Sulphate", role: "reactant", state: "s", color: "#86efac", ncertNote: "Pale green crystals" },

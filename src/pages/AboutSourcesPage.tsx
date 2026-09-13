@@ -128,10 +128,13 @@ export const AboutSourcesPage: React.FC = () => {
       {/* Editorial & Curriculum Disclaimer */}
       <div className="p-6 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs text-slate-500 dark:text-slate-400 space-y-2">
         <h4 className="font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider font-mono">
-          Curricular Alignment Disclaimer
+          Curricular Alignment & Attribution
         </h4>
-        <p>
-          This educational web application is an independent digital learning tool designed to support secondary students studying Science under the Central Board of Secondary Education (CBSE) syllabus in India. While reaction stoichiometry, observations, and terminology adhere strictly to the published NCERT Class 10 Science textbook, this application is not officially published or certified by NCERT or CBSE.
+        <p className="leading-relaxed">
+          • Aligned with the CBSE Class 10 NCERT Science Chemistry curriculum.<br />
+          • Educational resource created for conceptual study and virtual laboratory simulation.<br />
+          • Based on publicly available NCERT textbook chapters 1–4.<br />
+          • An independent learning tool without official government or publisher affiliation.
         </p>
       </div>
     </div>

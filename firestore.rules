@@ -13,8 +13,7 @@ service cloud.firestore {
 
     // User profile document
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow create, update: if isOwner(userId);
+      allow read, create, update: if isOwner(userId);
       allow delete: if false;
 
       // Saved lab experiments subcollection
