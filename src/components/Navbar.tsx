@@ -15,10 +15,11 @@ import {
   GitCompare,
   CheckCircle2,
   Flame,
-  Globe
+  Globe,
+  Search
 } from "lucide-react";
 
-export type NavTab = "home" | "chapters" | "explorer" | "lab" | "exam" | "applications" | "flashcards" | "compare" | "progress";
+export type NavTab = "home" | "chapters" | "explorer" | "lab" | "exam" | "applications" | "encyclopedia" | "flashcards" | "compare" | "progress" | "about";
 
 interface NavbarProps {
   currentTab: NavTab;
@@ -53,9 +54,10 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: "lab", label: "Virtual Lab", icon: FlaskConical },
     { id: "exam", label: "Exam Zone", icon: Award },
     { id: "applications", label: "Real-World", icon: Globe },
+    { id: "encyclopedia", label: "Encyclopedia", icon: Search },
     { id: "flashcards", label: "Flashcards", icon: CreditCard },
-    { id: "compare", label: "Compare", icon: GitCompare },
-    { id: "progress", label: "Progress", icon: CheckCircle2 }
+    { id: "progress", label: "Progress", icon: CheckCircle2 },
+    { id: "about", label: "About", icon: BookOpen }
   ];
 
   const handleItemClick = (tab: NavTab) => {
@@ -124,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <Flame className="w-4 h-4 text-orange-500 fill-orange-500 animate-pulse" />
               <span className="font-mono font-black text-sm text-orange-600 dark:text-orange-400">
-                {streakInfo?.currentStreak ?? 3}
+                {streakInfo?.currentStreak ?? 0}
               </span>
               <span className="hidden sm:inline text-[11px] font-semibold text-amber-700 dark:text-amber-300">
                 Day Streak
@@ -148,13 +150,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <div className="p-2 rounded-xl bg-slate-800/80 border border-slate-700/60">
                     <div className="text-[10px] text-slate-400 uppercase font-mono">Current</div>
                     <div className="text-base font-black text-orange-400 font-mono">
-                      {streakInfo?.currentStreak ?? 3} Days
+                      {streakInfo?.currentStreak ?? 0} Days
                     </div>
                   </div>
                   <div className="p-2 rounded-xl bg-slate-800/80 border border-slate-700/60">
                     <div className="text-[10px] text-slate-400 uppercase font-mono">Best Record</div>
                     <div className="text-base font-black text-amber-300 font-mono">
-                      {streakInfo?.longestStreak ?? 5} Days
+                      {streakInfo?.longestStreak ?? 0} Days
                     </div>
                   </div>
                 </div>

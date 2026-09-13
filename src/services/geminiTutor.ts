@@ -89,7 +89,7 @@ export function checkSafetyGuardrail(query: string): { isHazardous: boolean; saf
     if (q.includes(trigger)) {
       return {
         isHazardous: true,
-        safetyNotice: "⚠️ Safety Directive: Chemical reactions involving concentrated acids, toxic chlorine vapours, or volatile reactive substances must NEVER be conducted unsupervised or at home. CBSE Class 10 laboratory protocols mandate strict teacher supervision with certified fume cupboards and personal protective equipment (PPE)."
+        safetyNotice: "⚠️ Safety Directive: Chemical reactions involving concentrated acids, toxic chlorine vapours, or volatile reactive substances must NEVER be conducted unsupervised or at home. CBSE Class 10 laboratory protocols mandate strict teacher supervision with laboratory fume extraction hoods and personal protective equipment (PPE)."
       };
     }
   }

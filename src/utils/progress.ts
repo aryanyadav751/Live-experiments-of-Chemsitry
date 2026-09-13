@@ -28,43 +28,66 @@ export function getDailyStreak(): DailyStreakInfo {
   try {
     const raw = localStorage.getItem(STREAK_KEY);
     if (!raw) {
-      // Default initial streak for active student
+      // Genuine starting streak for new student
       const initial: DailyStreakInfo = {
-        currentStreak: 3,
-        longestStreak: 5,
-        lastActiveDate: today,
-        todayCompleted: true,
-        totalActiveDays: 8
+        currentStreak: 0,
+        longestStreak: 0,
+        lastActiveDate: "",
+        todayCompleted: false,
+        totalActiveDays: 0
       };
-      localStorage.setItem(STREAK_KEY, JSON.stringify(initial));
       return initial;
     }
 
     const data: DailyStreakInfo = JSON.parse(raw);
+
+    // Clear legacy mock seed if present
+    if (data.currentStreak === 3 && data.longestStreak === 5 && data.totalActiveDays === 8) {
+      const reset: DailyStreakInfo = {
+        currentStreak: 0,
+        longestStreak: 0,
+        lastActiveDate: "",
+        todayCompleted: false,
+        totalActiveDays: 0
+      };
+      localStorage.setItem(STREAK_KEY, JSON.stringify(reset));
+      return reset;
+    }
+
     const lastDate = data.lastActiveDate;
+
+    if (!lastDate) {
+      return {
+        currentStreak: 0,
+        longestStreak: data.longestStreak || 0,
+        lastActiveDate: "",
+        todayCompleted: false,
+        totalActiveDays: data.totalActiveDays || 0
+      };
+    }
 
     if (lastDate === today) {
       return { ...data, todayCompleted: true };
     } else if (lastDate === yesterday) {
       return { ...data, todayCompleted: false };
     } else {
-      // Gap of more than 1 day: streak reset but preserve longest
+      // Gap of more than 1 day: streak resets to 0 but preserve longest record
       const resetStreak: DailyStreakInfo = {
         currentStreak: 0,
         longestStreak: Math.max(data.longestStreak || 0, data.currentStreak || 0),
         lastActiveDate: lastDate,
         todayCompleted: false,
-        totalActiveDays: data.totalActiveDays || 1
+        totalActiveDays: data.totalActiveDays || 0
       };
       return resetStreak;
     }
   } catch {
     return {
-      currentStreak: 1,
-      longestStreak: 1,
-      lastActiveDate: today,
-      todayCompleted: true,
-      totalActiveDays: 1
+      currentStreak: 0,
+      longestStreak: 0,
+      lastActiveDate: "",
+      todayCompleted: false,
+      totalActiveDays: 0
     };
   }
 }
@@ -78,18 +101,16 @@ export function recordDailyActivity(): DailyStreakInfo {
     return current;
   }
 
-  let newStreak = current.currentStreak;
+  let newStreak = 1;
   if (current.lastActiveDate === yesterday) {
-    newStreak = current.currentStreak + 1;
-  } else if (current.lastActiveDate !== today) {
-    newStreak = 1;
-  } else {
-    newStreak = Math.max(1, current.currentStreak);
+    newStreak = (current.currentStreak || 0) + 1;
+  } else if (current.lastActiveDate === today) {
+    newStreak = Math.max(1, current.currentStreak || 1);
   }
 
   const updated: DailyStreakInfo = {
     currentStreak: newStreak,
-    longestStreak: Math.max(current.longestStreak, newStreak),
+    longestStreak: Math.max(current.longestStreak || 0, newStreak),
     lastActiveDate: today,
     todayCompleted: true,
     totalActiveDays: (current.totalActiveDays || 0) + (current.lastActiveDate === today ? 0 : 1)
@@ -106,21 +127,19 @@ export function recordDailyActivity(): DailyStreakInfo {
 
 const DEFAULT_PROGRESS: UserProgress = {
   completedChapters: [],
-  studiedReactions: ["ch1-magnesium-ribbon", "ch1-iron-copper-sulphate-displacement"],
-  simulatedExperiments: ["ch1-iron-copper-sulphate-displacement"],
-  quizScores: {
-    "ch1-magnesium-ribbon": { score: 2, total: 2, timestamp: Date.now() - 3600000 }
-  },
-  flashcardMastered: ["ch1-magnesium-ribbon"],
-  bookmarkedReactions: ["ch1-iron-copper-sulphate-displacement", "ch4-esterification-reaction"],
+  studiedReactions: [],
+  simulatedExperiments: [],
+  quizScores: {},
+  flashcardMastered: [],
+  bookmarkedReactions: [],
   streakInfo: {
-    currentStreak: 3,
-    longestStreak: 5,
-    lastActiveDate: getTodayDateString(),
-    todayCompleted: true,
-    totalActiveDays: 8
+    currentStreak: 0,
+    longestStreak: 0,
+    lastActiveDate: "",
+    todayCompleted: false,
+    totalActiveDays: 0
   },
-  balancedEquations: ["ch1-magnesium-ribbon"]
+  balancedEquations: []
 };
 
 export function getSavedProgress(): UserProgress {
@@ -259,18 +278,53 @@ export function calculateTotalProgress(progress: UserProgress): {
   simulatedCount: number;
   overallPercentage: number;
   quizTotalTaken: number;
+  questionsSolved: number;
+  flashcardsMastered: number;
+  balancedCount: number;
+  challengesSolved: number;
+  currentStreak: number;
+  longestStreak: number;
+  totalXP: number;
 } {
   const totalReactions = REACTIONS.length;
-  const studiedReactions = progress.studiedReactions.length;
-  const simulatedCount = progress.simulatedExperiments.length;
+  const studiedReactions = (progress.studiedReactions || []).length;
+  const simulatedCount = (progress.simulatedExperiments || []).length;
   const overallPercentage = Math.min(100, Math.round((studiedReactions / Math.max(1, totalReactions)) * 100));
-  const quizTotalTaken = Object.keys(progress.quizScores).length;
+  
+  const quizScores = progress.quizScores || {};
+  const quizTotalTaken = Object.keys(quizScores).length;
+  const questionsSolved = Object.values(quizScores).reduce((acc, q) => acc + (q.score || 0), 0);
+  
+  const flashcardsMastered = (progress.flashcardMastered || []).length;
+  const balancedCount = (progress.balancedEquations || []).length;
+  const challengesSolved = Object.keys(progress.challengeCompletions || {}).length;
+
+  const streak = progress.streakInfo || getDailyStreak();
+  const currentStreak = streak.currentStreak || 0;
+  const longestStreak = streak.longestStreak || 0;
+
+  // Real data-driven XP calculation from genuine activities
+  const totalXP =
+    (studiedReactions * 25) +
+    (simulatedCount * 50) +
+    (balancedCount * 40) +
+    (questionsSolved * 20) +
+    (flashcardsMastered * 15) +
+    (challengesSolved * 100) +
+    (currentStreak * 30);
 
   return {
     totalReactions,
     studiedReactions,
     simulatedCount,
     overallPercentage,
-    quizTotalTaken
+    quizTotalTaken,
+    questionsSolved,
+    flashcardsMastered,
+    balancedCount,
+    challengesSolved,
+    currentStreak,
+    longestStreak,
+    totalXP
   };
 }

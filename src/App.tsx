@@ -9,6 +9,8 @@ import { FlashcardsPage } from "./pages/FlashcardsPage";
 import { ComparePage } from "./pages/ComparePage";
 import { ProgressPage } from "./pages/ProgressPage";
 import { RealWorldApplicationsPage } from "./pages/RealWorldApplicationsPage";
+import { EncyclopediaPage } from "./pages/EncyclopediaPage";
+import { AboutSourcesPage } from "./pages/AboutSourcesPage";
 import { ReactionDetailModal } from "./components/ReactionDetailModal";
 import { Reaction, UserProgress } from "./types";
 import { REACTIONS } from "./data/reactions";
@@ -168,6 +170,13 @@ export default function App() {
           />
         )}
 
+        {currentTab === "encyclopedia" && (
+          <EncyclopediaPage
+            onRunExperiment={handleRunExperiment}
+            onSelectReaction={handleSelectReaction}
+          />
+        )}
+
         {currentTab === "flashcards" && (
           <FlashcardsPage
             userProgress={userProgress}
@@ -191,6 +200,10 @@ export default function App() {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           />
+        )}
+
+        {currentTab === "about" && (
+          <AboutSourcesPage />
         )}
       </main>
 

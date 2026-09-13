@@ -195,7 +195,7 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
           <span>{experiment.safetyPrecautions[0]}</span>
         </span>
         <span className="font-mono text-[11px] text-amber-700 dark:text-amber-400 font-bold">
-          NCERT Laboratory Certified
+          CBSE Class 10 Aligned Simulation
         </span>
       </div>
 

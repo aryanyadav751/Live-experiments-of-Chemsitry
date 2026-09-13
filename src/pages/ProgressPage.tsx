@@ -13,7 +13,8 @@ import {
   RotateCcw,
   Sparkles,
   Trophy,
-  Star
+  Star,
+  Flame
 } from "lucide-react";
 
 interface ProgressPageProps {
@@ -59,9 +60,15 @@ export const ProgressPage: React.FC<ProgressPageProps> = ({
       <div className="rounded-3xl border border-blue-500/30 bg-gradient-to-br from-blue-900 via-indigo-950 to-slate-950 text-white p-6 sm:p-8 shadow-xl">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center md:text-left">
-            <span className="text-xs font-mono font-bold text-blue-300 uppercase tracking-widest">
-              CBSE Class 10 Chemistry Syllabus
-            </span>
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <span className="text-xs font-mono font-bold text-blue-300 uppercase tracking-widest">
+                CBSE Class 10 Chemistry Syllabus
+              </span>
+              <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-mono text-xs font-bold flex items-center gap-1">
+                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                <span>{stats.totalXP} XP Earned</span>
+              </span>
+            </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold">
               Overall Syllabus Mastery: {stats.overallPercentage}%
             </h2>
@@ -87,53 +94,133 @@ export const ProgressPage: React.FC<ProgressPageProps> = ({
         </div>
       </div>
 
-      {/* 4 Stat Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-          <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600 w-fit mb-3">
-            <BookOpen className="w-5 h-5" />
+      {/* 8 Primary Student Dashboard Metrics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4">
+        {/* 1. Current Streak */}
+        <div className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:border-orange-500/40 transition-colors">
+          <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400">
+              <Flame className="w-5 h-5 fill-orange-500" />
+            </div>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Daily Goal</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white">
-            {stats.studiedReactions} / {stats.totalReactions}
+          <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900 dark:text-white">
+            {stats.currentStreak} <span className="text-xs font-sans font-normal text-slate-500">Days</span>
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-            Reactions Studied
+          <div className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1 flex items-center gap-1">
+            <span>🔥 Current Streak</span>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-          <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 w-fit mb-3">
-            <FlaskConical className="w-5 h-5" />
+        {/* 2. Longest Streak */}
+        <div className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:border-amber-500/40 transition-colors">
+          <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+              <Trophy className="w-5 h-5 text-amber-500" />
+            </div>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Record</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white">
+          <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900 dark:text-white">
+            {stats.longestStreak} <span className="text-xs font-sans font-normal text-slate-500">Days</span>
+          </div>
+          <div className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1 flex items-center gap-1">
+            <span>🏆 Longest Streak</span>
+          </div>
+        </div>
+
+        {/* 3. Experiments Completed */}
+        <div className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:border-emerald-500/40 transition-colors">
+          <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <FlaskConical className="w-5 h-5 text-emerald-600" />
+            </div>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Virtual Lab</span>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900 dark:text-white">
             {stats.simulatedCount}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-            Virtual Labs Conducted
+          <div className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1 flex items-center gap-1">
+            <span>🧪 Experiments Completed</span>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-          <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-600 w-fit mb-3">
-            <CreditCard className="w-5 h-5" />
+        {/* 4. Reactions Studied */}
+        <div className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:border-blue-500/40 transition-colors">
+          <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <BookOpen className="w-5 h-5 text-blue-600" />
+            </div>
+            <span className="text-[10px] font-mono uppercase text-slate-400">{stats.totalReactions} Total</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white">
-            {userProgress.flashcardMastered.length}
+          <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900 dark:text-white">
+            {stats.studiedReactions}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-            Flashcards Mastered
+          <div className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1 flex items-center gap-1">
+            <span>⚗️ Reactions Studied</span>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600 w-fit mb-3">
-            <Award className="w-5 h-5" />
+        {/* 5. Questions Solved */}
+        <div className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:border-purple-500/40 transition-colors">
+          <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
+              <Award className="w-5 h-5 text-purple-600" />
+            </div>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Quiz & Practice</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white">
-            {stats.quizTotalTaken}
+          <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900 dark:text-white">
+            {stats.questionsSolved}
           </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-            Quizzes Completed
+          <div className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1 flex items-center gap-1">
+            <span>🧠 Questions Solved</span>
+          </div>
+        </div>
+
+        {/* 6. Flashcards Mastered */}
+        <div className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:border-indigo-500/40 transition-colors">
+          <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+              <CreditCard className="w-5 h-5 text-indigo-600" />
+            </div>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Spaced Recall</span>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900 dark:text-white">
+            {stats.flashcardsMastered}
+          </div>
+          <div className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1 flex items-center gap-1">
+            <span>🎴 Flashcards Mastered</span>
+          </div>
+        </div>
+
+        {/* 7. Equations Balanced */}
+        <div className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:border-cyan-500/40 transition-colors">
+          <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+              <Sparkles className="w-5 h-5 text-cyan-600" />
+            </div>
+            <span className="text-[10px] font-mono uppercase text-slate-400">Stoichiometry</span>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black font-mono text-slate-900 dark:text-white">
+            {stats.balancedCount}
+          </div>
+          <div className="text-xs text-slate-600 dark:text-slate-400 font-semibold mt-1 flex items-center gap-1">
+            <span>⚖️ Equations Balanced</span>
+          </div>
+        </div>
+
+        {/* 8. Total Earned XP */}
+        <div className="p-4 sm:p-5 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/5 shadow-sm hover:border-amber-500/60 transition-colors">
+          <div className="flex items-center justify-between mb-2">
+            <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+              <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
+            </div>
+            <span className="text-[10px] font-mono font-bold uppercase text-amber-600 dark:text-amber-400">Level {Math.floor(stats.totalXP / 200) + 1}</span>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black font-mono text-amber-600 dark:text-amber-400">
+            {stats.totalXP}
+          </div>
+          <div className="text-xs text-amber-700 dark:text-amber-300 font-semibold mt-1 flex items-center gap-1">
+            <span>⭐ Earned XP</span>
           </div>
         </div>
       </div>
