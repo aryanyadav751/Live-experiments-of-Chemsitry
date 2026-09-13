@@ -1,6 +1,6 @@
 {
-  "name": "Chemistry Lab — Class 10 NCERT",
-  "description": "Interactive educational virtual chemistry laboratory and study hub for CBSE Class 10 Science covering NCERT reactions with simulations, molecular views, and quizzes.",
+  "name": "Virtual Chemistry Lab — Experiment Anything",
+  "description": "Interactive virtual chemistry laboratory featuring Guided Experiments, Discovery Lab, Challenge Lab, 3D molecular views, and Google Drive lab report integration.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

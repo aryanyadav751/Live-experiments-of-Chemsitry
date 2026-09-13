@@ -13,6 +13,8 @@ import {
   HindiExplanation,
   ExplanationLevel
 } from "../services/geminiTutor";
+import { GoogleDriveReportModal } from "./GoogleDriveReportModal";
+import { LabReportExport } from "../services/googleDriveService";
 import {
   X,
   FlaskConical,
@@ -28,7 +30,8 @@ import {
   Languages,
   Globe,
   AlertTriangle,
-  Tag
+  Tag,
+  HardDrive
 } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -53,6 +56,7 @@ export const ReactionDetailModal: React.FC<ReactionDetailModalProps> = ({
   const [tutorResult, setTutorResult] = useState<TutorExplanation | null>(null);
   const [hindiResult, setHindiResult] = useState<HindiExplanation | null>(null);
   const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
+  const [showDriveModal, setShowDriveModal] = useState<boolean>(false);
 
   // Keyboard accessibility: Escape to close
   useEffect(() => {
@@ -125,6 +129,15 @@ export const ReactionDetailModal: React.FC<ReactionDetailModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowDriveModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all"
+              title="Export practical lab report to Google Drive"
+            >
+              <HardDrive className="w-3.5 h-3.5 text-blue-500" />
+              <span className="hidden sm:inline">Drive Export</span>
+            </button>
+
             <button
               onClick={() => onRunExperiment(reaction)}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-500/25 transition-all hover:scale-102"
@@ -501,6 +514,24 @@ export const ReactionDetailModal: React.FC<ReactionDetailModalProps> = ({
             <QuizCard questions={reaction.quiz} quizTitle={`${reaction.title} Quiz`} />
           )}
         </div>
+
+        {/* Google Drive Export Modal */}
+        {showDriveModal && (
+          <GoogleDriveReportModal
+            report={{
+              title: reaction.title,
+              chapter: `NCERT Class 10 Chemistry — Chapter ${reaction.chapterNumber}: ${reaction.chapter}`,
+              aim: `To investigate the chemical reaction and properties of: ${reaction.title}`,
+              apparatus: `${reaction.simulatorConfig?.apparatus || "Glass Beaker / Boiling Tube"}, Reagents (${reaction.reactants.join(", ")}), Delivery Tubes, Heat / Water as applicable.`,
+              reactions: [reaction.balancedEquation],
+              observations: reaction.observations.join("\n- "),
+              inference: `${reaction.explanation}\n\nMechanism: ${reaction.molecularExplanation}`,
+              safetyPrecautions: reaction.safetyNotes.join("; ") || "Handle laboratory glassware safely.",
+              mode: "guided"
+            }}
+            onClose={() => setShowDriveModal(false)}
+          />
+        )}
       </motion.div>
     </div>
   );

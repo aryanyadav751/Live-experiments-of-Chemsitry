@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper: is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: is owner of the user document tree
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // User profile document
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isOwner(userId);
+      allow delete: if false;
+
+      // Saved lab experiments subcollection
+      match /experiments/{experimentId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Lab reports subcollection
+      match /reports/{reportId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Challenge progress subcollection
+      match /challenges/{challengeId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+  }
+}

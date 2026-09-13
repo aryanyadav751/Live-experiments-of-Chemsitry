@@ -1,0 +1,92 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with study progress and preferences",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "displayName": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "streakDays": { "type": "number" },
+        "completedChallenges": { "type": "number" },
+        "totalScore": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "LabExperiment": {
+      "title": "LabExperiment",
+      "description": "Saved virtual experiment run or discovery mix",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "mode": { "type": "string", "enum": ["guided", "discovery", "challenge"] },
+        "title": { "type": "string" },
+        "substances": { "type": "array", "items": { "type": "string" } },
+        "reactionResult": { "type": "string" },
+        "isHazardous": { "type": "boolean" },
+        "observations": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "mode", "title", "substances"]
+    },
+    "LabReport": {
+      "title": "LabReport",
+      "description": "Formal lab report exportable to Google Drive",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "chapter": { "type": "string" },
+        "aim": { "type": "string" },
+        "apparatus": { "type": "string" },
+        "reactions": { "type": "array", "items": { "type": "string" } },
+        "observations": { "type": "string" },
+        "inference": { "type": "string" },
+        "safetyPrecautions": { "type": "string" },
+        "googleDriveFileId": { "type": "string" },
+        "googleDriveWebViewLink": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "aim", "observations", "inference"]
+    },
+    "ChallengeProgress": {
+      "title": "ChallengeProgress",
+      "description": "Record of solved chemistry challenges in Challenge Lab",
+      "type": "object",
+      "properties": {
+        "challengeId": { "type": "string" },
+        "userId": { "type": "string" },
+        "completed": { "type": "boolean" },
+        "score": { "type": "number" },
+        "hintsUsed": { "type": "number" },
+        "solvedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["challengeId", "userId", "completed", "score"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile document owned by the user"
+    },
+    "/users/{userId}/experiments/{experimentId}": {
+      "schema": "LabExperiment",
+      "description": "Saved virtual chemistry experiments for the user"
+    },
+    "/users/{userId}/reports/{reportId}": {
+      "schema": "LabReport",
+      "description": "Saved lab reports created by the user with Google Drive metadata"
+    },
+    "/users/{userId}/challenges/{challengeId}": {
+      "schema": "ChallengeProgress",
+      "description": "Challenge Lab attempts and completion progress"
+    }
+  }
+}

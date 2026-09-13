@@ -180,4 +180,72 @@ export interface UserProgress {
   bookmarkedReactions: string[];
   streakInfo?: DailyStreakInfo;
   balancedEquations?: string[];
+  challengeCompletions?: Record<string, { score: number; date: string }>;
 }
+
+export type VirtualLabMode = "guided" | "discovery" | "challenge";
+
+export interface DiscoverySubstance {
+  id: string;
+  name: string;
+  formula: string;
+  category: "Acid" | "Base" | "Metal" | "Salt" | "Oxide" | "Organic" | "Indicator" | "Other";
+  state: "solid" | "liquid" | "aqueous" | "gas";
+  color: string;
+  description: string;
+  isHazardous?: boolean;
+  hazardNote?: string;
+  phValue?: number;
+}
+
+export interface DiscoveryReactionResult {
+  occurred: boolean;
+  title: string;
+  equation: string;
+  balancedEquation: string;
+  reactionType: string;
+  observations: string[];
+  explanation: string;
+  energyChange: "Exothermic" | "Endothermic" | "Neutral";
+  isHazardous: boolean;
+  simulationSafetyNote?: string;
+  visualEffect: {
+    color: string;
+    hasBubbles?: boolean;
+    gasName?: string;
+    hasPrecipitate?: boolean;
+    precipitateColor?: string;
+    precipitateName?: string;
+    temperatureChange?: number; // delta in deg C
+    flameColor?: string;
+    soundDesc?: string;
+  };
+}
+
+export interface ChemistryChallenge {
+  id: string;
+  title: string;
+  chapter: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  points: number;
+  scenario: string;
+  objective: string;
+  allowedSubstanceIds: string[];
+  targetReactionEquation?: string;
+  validationCheck: (
+    selectedIds: string[],
+    condition: {
+      heat: boolean;
+      water: boolean;
+      testedWithLimeWater?: boolean;
+      testedWithSplinter?: boolean;
+    }
+  ) => {
+    solved: boolean;
+    feedback: string;
+    observation: string;
+  };
+  hints: string[];
+  boardFact: string;
+}
+
