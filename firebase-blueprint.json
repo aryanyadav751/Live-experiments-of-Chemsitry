@@ -69,9 +69,21 @@
         "solvedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["challengeId", "userId", "completed", "score"]
+    },
+    "ConnectionTest": {
+      "title": "ConnectionTest",
+      "description": "Diagnostic document used to verify Firestore server connectivity",
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" }
+      }
     }
   },
   "firestore": {
+    "/test/{docId}": {
+      "schema": "ConnectionTest",
+      "description": "Public diagnostic path to test Firestore backend server reachability"
+    },
     "/users/{userId}": {
       "schema": "UserProfile",
       "description": "User profile document owned by the user"

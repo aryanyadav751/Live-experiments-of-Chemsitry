@@ -349,7 +349,15 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
   const [speed, setSpeed] = useState<0.5 | 1 | 2>(1);
   const [activeStage, setActiveStage] = useState<"reactants" | "transition" | "products">("reactants");
 
-  // Interaction controls
+  // Interaction controls and decoupled animation refs
+  const progressRef = useRef(0);
+  const speedRef = useRef<number>(speed);
+  speedRef.current = speed;
+  const isPlayingRef = useRef<boolean>(isPlaying);
+  isPlayingRef.current = isPlaying;
+  const lastStageRef = useRef<"reactants" | "transition" | "products">("reactants");
+  const lastSliderUpdateRef = useRef<number>(0);
+
   const isDraggingRef = useRef(false);
   const isPanningRef = useRef(false);
   const previousMousePositionRef = useRef({ x: 0, y: 0 });
@@ -358,17 +366,6 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
   const cameraTargetRef = useRef(new THREE.Vector3(0, 0, 0));
 
   const sceneData = useMemo(() => generateGenericScene(reaction), [reaction]);
-
-  // Handle stage change from progress
-  useEffect(() => {
-    if (progress < 0.35) {
-      setActiveStage("reactants");
-    } else if (progress >= 0.35 && progress < 0.7) {
-      setActiveStage("transition");
-    } else {
-      setActiveStage("products");
-    }
-  }, [progress]);
 
   // Position interpolator
   const getAtomPosition = useCallback((atom: GenericMolecularScene["atoms"][0], t: number): [number, number, number] => {
@@ -404,13 +401,74 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
     cameraRef.current.lookAt(target);
   }, []);
 
+  // Update positions of atoms & bonds in Three.js scene
+  const updateMeshes = useCallback((t: number) => {
+    const atomPosMap = new Map<string, THREE.Vector3>();
+
+    sceneData.atoms.forEach(atomData => {
+      const entry = atomMeshesRef.current.get(atomData.id);
+      if (!entry) return;
+      const [x, y, z] = getAtomPosition(atomData, t);
+      entry.mesh.position.set(x, y, z);
+      const prop = getElementProp(atomData.symbol);
+      entry.sprite.position.set(x, y + prop.radius + 0.35, z);
+      atomPosMap.set(atomData.id, new THREE.Vector3(x, y, z));
+    });
+
+    // Update Bonds
+    bondMeshesRef.current.forEach(bond => {
+      const p1 = atomPosMap.get(bond.from);
+      const p2 = atomPosMap.get(bond.to);
+      if (!p1 || !p2) return;
+
+      // Determine bond visibility according to phase
+      let visible = true;
+      if (bond.phase === "reactant" && t > 0.65) visible = false;
+      if (bond.phase === "product" && t < 0.45) visible = false;
+      bond.line.visible = visible;
+
+      if (visible) {
+        const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+        bond.line.position.copy(mid);
+
+        const dir = new THREE.Vector3().subVectors(p2, p1);
+        const len = dir.length();
+        bond.line.scale.set(1, len, 1);
+
+        const up = new THREE.Vector3(0, 1, 0);
+        const axis = new THREE.Vector3().crossVectors(up, dir.clone().normalize()).normalize();
+        const angle = Math.acos(up.dot(dir.clone().normalize()));
+        bond.line.quaternion.setFromAxisAngle(axis, angle);
+      }
+    });
+
+    // Render frame
+    if (rendererRef.current && sceneRef.current && cameraRef.current) {
+      rendererRef.current.render(sceneRef.current, cameraRef.current);
+    }
+  }, [sceneData, getAtomPosition]);
+
+  // Handle explicit progress adjustment from user
+  const handleSetProgress = useCallback((val: number, playing = false) => {
+    progressRef.current = val;
+    setProgress(val);
+    setIsPlaying(playing);
+    const newStage: "reactants" | "transition" | "products" =
+      val < 0.35 ? "reactants" : val < 0.7 ? "transition" : "products";
+    if (newStage !== lastStageRef.current) {
+      lastStageRef.current = newStage;
+      setActiveStage(newStage);
+    }
+    updateMeshes(val);
+  }, [updateMeshes]);
+
   // Initialize Three.js scene
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const width = container.clientWidth || 600;
-    const heightPx = typeof height === "number" ? height : container.clientHeight || 420;
+    const width = container.clientWidth || container.offsetWidth || 360;
+    const heightPx = typeof height === "number" ? height : container.clientHeight || 400;
 
     // 1. Scene
     const scene = new THREE.Scene();
@@ -428,8 +486,12 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
     // 3. Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     rendererRef.current = renderer;
-    renderer.setSize(width, heightPx);
+    renderer.setSize(width, heightPx, false);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.domElement.style.width = "100%";
+    renderer.domElement.style.height = "100%";
+    renderer.domElement.style.display = "block";
+    renderer.domElement.style.maxWidth = "100%";
     container.innerHTML = "";
     container.appendChild(renderer.domElement);
 
@@ -441,7 +503,7 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
     dirLight1.position.set(5, 10, 7);
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 0.4);
+    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 0.6);
     dirLight2.position.set(-5, -5, -5);
     scene.add(dirLight2);
 
@@ -494,6 +556,18 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
       });
     });
 
+    // Initial render
+    updateMeshes(progressRef.current);
+
+    // Dedicated non-passive wheel listener for smooth zoom without browser event interference
+    const handleNativeWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      cameraDistanceRef.current = Math.max(3, Math.min(18, cameraDistanceRef.current + e.deltaY * 0.008));
+      updateCameraPosition();
+      updateMeshes(progressRef.current);
+    };
+    container.addEventListener("wheel", handleNativeWheel, { passive: false });
+
     // Resize observer
     const resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
@@ -502,7 +576,8 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
         if (newW > 0 && newH > 0 && rendererRef.current && cameraRef.current) {
           cameraRef.current.aspect = newW / newH;
           cameraRef.current.updateProjectionMatrix();
-          rendererRef.current.setSize(newW, newH);
+          rendererRef.current.setSize(newW, newH, false);
+          updateMeshes(progressRef.current);
         }
       }
     });
@@ -510,10 +585,8 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
 
     // Clean up
     return () => {
+      container.removeEventListener("wheel", handleNativeWheel);
       resizeObserver.disconnect();
-      if (animFrameIdRef.current) {
-        cancelAnimationFrame(animFrameIdRef.current);
-      }
       sphereGeoCache.forEach(g => g.dispose());
       cylinderGeo.dispose();
       bondMat.dispose();
@@ -522,70 +595,36 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
         container.removeChild(renderer.domElement);
       }
     };
-  }, [sceneData, height, updateCameraPosition]);
+  }, [sceneData, height, updateCameraPosition, updateMeshes]);
 
-  // Animation Loop
+  // Decoupled Animation Loop (60fps Three.js updates without 60 React re-renders/second)
   useEffect(() => {
     let lastTime = performance.now();
 
     const animate = (time: number) => {
-      const delta = (time - lastTime) / 1000;
+      const delta = Math.min((time - lastTime) / 1000, 0.1);
       lastTime = time;
 
-      // Update progress if playing
-      if (isPlaying) {
-        setProgress(prev => {
-          const next = prev + (delta * 0.22 * speed);
-          if (next >= 1) return 0; // loop seamlessly
-          return next;
-        });
-      }
+      if (isPlayingRef.current) {
+        const next = (progressRef.current + delta * 0.22 * speedRef.current) % 1;
+        progressRef.current = next;
 
-      // Update positions of atoms & bonds
-      const t = progress;
-      const atomPosMap = new Map<string, THREE.Vector3>();
-
-      sceneData.atoms.forEach(atomData => {
-        const entry = atomMeshesRef.current.get(atomData.id);
-        if (!entry) return;
-        const [x, y, z] = getAtomPosition(atomData, t);
-        entry.mesh.position.set(x, y, z);
-        const prop = getElementProp(atomData.symbol);
-        entry.sprite.position.set(x, y + prop.radius + 0.35, z);
-        atomPosMap.set(atomData.id, new THREE.Vector3(x, y, z));
-      });
-
-      // Update Bonds
-      bondMeshesRef.current.forEach(bond => {
-        const p1 = atomPosMap.get(bond.from);
-        const p2 = atomPosMap.get(bond.to);
-        if (!p1 || !p2) return;
-
-        // Determine bond visibility according to phase
-        let visible = true;
-        if (bond.phase === "reactant" && t > 0.65) visible = false;
-        if (bond.phase === "product" && t < 0.45) visible = false;
-        bond.line.visible = visible;
-
-        if (visible) {
-          const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-          bond.line.position.copy(mid);
-
-          const dir = new THREE.Vector3().subVectors(p2, p1);
-          const len = dir.length();
-          bond.line.scale.set(1, len, 1);
-
-          const up = new THREE.Vector3(0, 1, 0);
-          const axis = new THREE.Vector3().crossVectors(up, dir.clone().normalize()).normalize();
-          const angle = Math.acos(up.dot(dir.clone().normalize()));
-          bond.line.quaternion.setFromAxisAngle(axis, angle);
+        // Stage boundary checks (only triggers React state when crossing stage boundary)
+        const newStage: "reactants" | "transition" | "products" =
+          next < 0.35 ? "reactants" : next < 0.7 ? "transition" : "products";
+        if (newStage !== lastStageRef.current) {
+          lastStageRef.current = newStage;
+          setActiveStage(newStage);
         }
-      });
 
-      // Render frame
-      if (rendererRef.current && sceneRef.current && cameraRef.current) {
-        rendererRef.current.render(sceneRef.current, cameraRef.current);
+        // Throttle UI slider React state updates to 10Hz to prevent render loops
+        if (time - lastSliderUpdateRef.current > 100) {
+          lastSliderUpdateRef.current = time;
+          setProgress(next);
+        }
       }
+
+      updateMeshes(progressRef.current);
 
       animFrameIdRef.current = requestAnimationFrame(animate);
     };
@@ -595,12 +634,16 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
     return () => {
       if (animFrameIdRef.current) {
         cancelAnimationFrame(animFrameIdRef.current);
+        animFrameIdRef.current = null;
       }
     };
-  }, [isPlaying, speed, progress, sceneData, getAtomPosition]);
+  }, [updateMeshes]);
 
-  // Pointer interaction handlers: rotate, pan, zoom
+  // Pointer interaction handlers: rotate, pan, zoom with pointer capture
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
     if (e.button === 2 || e.shiftKey) {
       isPanningRef.current = true;
     } else {
@@ -618,22 +661,21 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
       cameraRotationRef.current.y -= deltaX * 0.008;
       cameraRotationRef.current.x = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, cameraRotationRef.current.x + deltaY * 0.008));
       updateCameraPosition();
+      updateMeshes(progressRef.current);
     } else if (isPanningRef.current) {
       cameraTargetRef.current.x -= deltaX * 0.008;
       cameraTargetRef.current.y += deltaY * 0.008;
       updateCameraPosition();
+      updateMeshes(progressRef.current);
     }
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {}
     isDraggingRef.current = false;
     isPanningRef.current = false;
-  };
-
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    cameraDistanceRef.current = Math.max(3, Math.min(18, cameraDistanceRef.current + e.deltaY * 0.008));
-    updateCameraPosition();
   };
 
   const resetCamera = () => {
@@ -641,54 +683,57 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
     cameraRotationRef.current = { x: 0.2, y: 0.3 };
     cameraTargetRef.current.set(0, 0, 0);
     updateCameraPosition();
+    updateMeshes(progressRef.current);
   };
 
   return (
-    <div className="relative rounded-3xl overflow-hidden border border-slate-800 bg-slate-950 text-white shadow-2xl flex flex-col select-none">
+    <div className="relative w-full min-w-0 rounded-3xl overflow-hidden border border-slate-800 bg-slate-950 text-white shadow-2xl flex flex-col select-none">
       {/* Top HUD Bar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-slate-900/90 border-b border-slate-800 backdrop-blur-md z-10">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-4 py-2.5 bg-slate-900/90 border-b border-slate-800 backdrop-blur-md z-10 min-w-0">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <div className="p-1.5 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 shrink-0">
             <Atom className="w-4 h-4" />
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-blue-400 uppercase tracking-wider">
+              <span className="text-[10px] sm:text-xs font-mono font-bold text-blue-400 uppercase tracking-wider shrink-0">
                 3D WebGL Molecular View
               </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">
-                {reaction.reactionType[0]}
-              </span>
+              {reaction.reactionType[0] && (
+                <span className="text-[9px] sm:text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono shrink-0">
+                  {reaction.reactionType[0]}
+                </span>
+              )}
             </div>
-            <h4 className="text-sm font-black text-white truncate max-w-sm sm:max-w-md">
+            <h4 className="text-xs sm:text-sm font-bold text-white truncate max-w-[200px] sm:max-w-xs md:max-w-md">
               {reaction.title}
             </h4>
           </div>
         </div>
 
         {/* Stage Pills */}
-        <div className="hidden sm:flex items-center gap-1.5 p-1 rounded-xl bg-slate-950/80 border border-slate-800 text-xs font-mono">
+        <div className="flex items-center gap-1 p-0.5 sm:p-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[10px] sm:text-xs font-mono shrink-0">
           <button
-            onClick={() => { setProgress(0); setIsPlaying(false); }}
-            className={`px-2.5 py-1 rounded-lg transition-all ${
+            onClick={() => handleSetProgress(0, false)}
+            className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg transition-all ${
               activeStage === "reactants" ? "bg-blue-600 text-white font-bold" : "text-slate-400 hover:text-white"
             }`}
           >
             1. Reactants
           </button>
-          <ChevronRight className="w-3 h-3 text-slate-600" />
+          <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-600" />
           <button
-            onClick={() => { setProgress(0.5); setIsPlaying(false); }}
-            className={`px-2.5 py-1 rounded-lg transition-all ${
+            onClick={() => handleSetProgress(0.5, false)}
+            className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg transition-all ${
               activeStage === "transition" ? "bg-amber-500 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
             }`}
           >
             2. Transition
           </button>
-          <ChevronRight className="w-3 h-3 text-slate-600" />
+          <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-slate-600" />
           <button
-            onClick={() => { setProgress(0.99); setIsPlaying(false); }}
-            className={`px-2.5 py-1 rounded-lg transition-all ${
+            onClick={() => handleSetProgress(0.99, false)}
+            className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg transition-all ${
               activeStage === "products" ? "bg-emerald-500 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
             }`}
           >
@@ -704,20 +749,19 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}
-        onWheel={handleWheel}
         onContextMenu={e => e.preventDefault()}
         style={{ height }}
-        className="w-full relative cursor-grab active:cursor-grabbing overflow-hidden"
+        className="w-full min-w-0 relative cursor-grab active:cursor-grabbing overflow-hidden"
       />
 
       {/* Overlay Chemical Mechanism Box */}
-      <div className="absolute bottom-16 left-4 right-4 sm:right-auto sm:max-w-md pointer-events-none z-10">
-        <div className="p-3.5 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 text-xs text-slate-200 shadow-xl space-y-1">
+      <div className="absolute bottom-16 left-3 right-3 sm:left-4 sm:right-auto sm:max-w-xs md:max-w-sm pointer-events-none z-10">
+        <div className="p-3 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 text-xs text-slate-200 shadow-xl space-y-1">
           <div className="flex items-center gap-1.5 font-bold text-sky-400 font-mono text-[11px]">
             <Sparkles className="w-3.5 h-3.5" />
             <span>MOLECULAR REORGANIZATION</span>
           </div>
-          <p className="leading-relaxed text-[11px]">
+          <p className="leading-relaxed text-[11px] line-clamp-3 sm:line-clamp-none">
             {sceneData.mechanismDescription}
           </p>
           <div className="text-[10px] font-mono text-amber-400 pt-0.5">
@@ -727,20 +771,20 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
       </div>
 
       {/* Bottom Controls Bar */}
-      <div className="px-4 py-3 bg-slate-900/95 border-t border-slate-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-3 z-10">
+      <div className="px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-900/95 border-t border-slate-800 backdrop-blur-md flex flex-wrap items-center justify-between gap-2 z-10 min-w-0">
         {/* Playback buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md shadow-blue-500/20 active:scale-95"
+            className="flex items-center gap-1 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-md shadow-blue-500/20 active:scale-95"
           >
             {isPlaying ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
             <span>{isPlaying ? "Pause" : "Play"}</span>
           </button>
 
           <button
-            onClick={() => { setProgress(0); setIsPlaying(true); }}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition-all"
+            onClick={() => handleSetProgress(0, true)}
+            className="flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition-all"
             title="Replay Animation"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -748,12 +792,12 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
           </button>
 
           {/* Speed selector */}
-          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-mono">
+          <div className="flex items-center gap-0.5 bg-slate-950 p-0.5 sm:p-1 rounded-xl border border-slate-800 text-[10px] sm:text-[11px] font-mono">
             {([0.5, 1, 2] as const).map(s => (
               <button
                 key={s}
                 onClick={() => setSpeed(s)}
-                className={`px-2 py-0.5 rounded-lg transition-all ${
+                className={`px-1.5 py-0.5 rounded-lg transition-all ${
                   speed === s ? "bg-blue-600 text-white font-bold" : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -764,7 +808,7 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
         </div>
 
         {/* Progress Timeline Slider */}
-        <div className="flex-1 min-w-[140px] max-w-xs flex items-center gap-2">
+        <div className="flex-1 min-w-[90px] sm:min-w-[120px] max-w-xs flex items-center gap-1.5">
           <span className="text-[10px] font-mono text-slate-400">0%</span>
           <input
             type="range"
@@ -773,8 +817,7 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
             step="0.01"
             value={progress}
             onChange={e => {
-              setIsPlaying(false);
-              setProgress(parseFloat(e.target.value));
+              handleSetProgress(parseFloat(e.target.value), false);
             }}
             className="w-full accent-blue-500 cursor-pointer h-1.5 rounded-lg bg-slate-800"
           />
@@ -782,13 +825,13 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
         </div>
 
         {/* Camera Tools */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => {
               cameraDistanceRef.current = Math.max(3, cameraDistanceRef.current - 1.2);
               updateCameraPosition();
             }}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all"
+            className="p-1 sm:p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all"
             title="Zoom In"
           >
             <ZoomIn className="w-3.5 h-3.5" />
@@ -798,17 +841,17 @@ export const ReactionAnimationEngine: React.FC<ReactionAnimationEngineProps> = (
               cameraDistanceRef.current = Math.min(18, cameraDistanceRef.current + 1.2);
               updateCameraPosition();
             }}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all"
+            className="p-1 sm:p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all"
             title="Zoom Out"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={resetCamera}
-            className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[11px] font-mono transition-all"
+            className="px-1.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[10px] sm:text-[11px] font-mono transition-all"
             title="Reset Camera View"
           >
-            Reset View
+            Reset
           </button>
         </div>
       </div>

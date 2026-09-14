@@ -11,6 +11,12 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Diagnostic connection test document
+    match /test/{docId} {
+      allow get: if true;
+      allow list, write: if false;
+    }
+
     // User profile document
     match /users/{userId} {
       allow read, create, update: if isOwner(userId);

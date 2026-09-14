@@ -55,7 +55,7 @@ export const ExperimentTimeline: React.FC<ExperimentTimelineProps> = ({
                 onClick={() => onSelectStep(idx)}
                 className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs whitespace-nowrap transition-all shrink-0 ${
                   isCurrent
-                    ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-500/30 scale-105"
+                    ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-500/30 ring-2 ring-blue-500/50"
                     : isCompleted
                     ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200 dark:border-emerald-800"
                     : "bg-slate-50 dark:bg-slate-800/60 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-800"

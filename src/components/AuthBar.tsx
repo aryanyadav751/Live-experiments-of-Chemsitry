@@ -44,8 +44,16 @@ export const AuthBar: React.FC<AuthBarProps> = ({ onUserChange, className = "" }
       setCurrentUser(res.user);
       if (onUserChange) onUserChange(res.user, res.accessToken);
     } catch (err: any) {
-      console.error("Auth sign-in failure:", err);
-      setError(err?.message || "Failed to sign in with Google.");
+      if (
+        err?.code === "auth/cancelled-popup-request" ||
+        err?.code === "auth/popup-closed-by-user"
+      ) {
+        // User closed the popup, do not show error banner
+        setError(null);
+      } else {
+        console.error("Auth sign-in failure:", err);
+        setError(err?.message || "Failed to sign in with Google.");
+      }
     } finally {
       setLoading(false);
     }
@@ -94,13 +102,13 @@ export const AuthBar: React.FC<AuthBarProps> = ({ onUserChange, className = "" }
                 </span>
                 <span className="inline-flex items-center gap-0.5 text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded-full shrink-0">
                   <CheckCircle2 className="w-3 h-3" />
-                  Synced
+                  {dbConnected ? "Synced" : "Local"}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 font-mono">
                 <span className="flex items-center gap-1">
-                  <Cloud className="w-3 h-3 text-blue-500" />
-                  Firebase
+                  <Cloud className={`w-3 h-3 ${dbConnected ? "text-blue-500" : "text-amber-500"}`} />
+                  {dbConnected ? "Firebase" : "Offline Mode"}
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">

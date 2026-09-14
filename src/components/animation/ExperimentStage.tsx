@@ -73,12 +73,17 @@ export const ExperimentStage: React.FC<ExperimentStageProps> = ({
   // Check user preference for reduced motion
   const [reducedMotion, setReducedMotion] = useState(false);
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && window.matchMedia) {
       const media = window.matchMedia("(prefers-reduced-motion: reduce)");
       setReducedMotion(media.matches);
       const listener = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-      media.addEventListener("change", listener);
-      return () => media.removeEventListener("change", listener);
+      if (media.addEventListener) {
+        media.addEventListener("change", listener);
+        return () => media.removeEventListener("change", listener);
+      } else if ((media as unknown as { addListener: (cb: typeof listener) => void }).addListener) {
+        (media as unknown as { addListener: (cb: typeof listener) => void }).addListener(listener);
+        return () => (media as unknown as { removeListener: (cb: typeof listener) => void }).removeListener(listener);
+      }
     }
   }, []);
 
@@ -99,11 +104,14 @@ export const ExperimentStage: React.FC<ExperimentStageProps> = ({
   const [studentPrediction, setStudentPrediction] = useState<PredictionOption | null>(null);
   const [showCompareModal, setShowCompareModal] = useState(false);
 
-  // Split-screen & View Tab state
-  // On desktop: can show split-screen [Experiment | Molecular]
-  // On mobile: tabs [Experiment] | [Molecular 3D]
-  const [activeViewTab, setActiveViewTab] = useState<"experiment" | "molecular">("experiment");
-  const [isSplitScreen, setIsSplitScreen] = useState(true);
+  // View mode: "experiment" (default full-width lab apparatus), "molecular" (full-width 3D lattice), or "split"
+  const [viewMode, setViewMode] = useState<"experiment" | "molecular" | "split">("experiment");
+
+  // References for stable completion callback
+  const onExperimentCompleteRef = useRef(onExperimentComplete);
+  onExperimentCompleteRef.current = onExperimentComplete;
+  const studentPredictionRef = useRef(studentPrediction);
+  studentPredictionRef.current = studentPrediction;
 
   // Step timer ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -119,15 +127,18 @@ export const ExperimentStage: React.FC<ExperimentStageProps> = ({
   const isReactionActive = currentStep.type === "react" || currentStep.type === "observe" || currentStep.type === "product";
   const isStartingReaction = currentStep.type === "react" && stepProgress < 0.35;
 
+  const isSolidOnlyReaction = timeline.primaryReagent.state === "solid" && (!timeline.addedReagents[0] || timeline.addedReagents[0]?.state === "solid");
+
   // Liquid level calculation
   const liquidFillPercentage = useMemo(() => {
+    if (isSolidOnlyReaction) return 0;
     if (currentStepIndex === 0) return 0; // setup, empty vessel
     if (currentStepIndex === 1) return Math.min(50, stepProgress * 50); // primary pouring
     if (currentStepIndex === 2 && timeline.addedReagents[0]?.state === "liquid") {
       return 50 + stepProgress * 15; // secondary pouring
     }
     return 65; // filled during mix and reaction
-  }, [currentStepIndex, stepProgress, timeline.addedReagents]);
+  }, [currentStepIndex, stepProgress, timeline.addedReagents, isSolidOnlyReaction]);
 
   // Liquid Color Interpolation
   const currentLiquidColor = useMemo(() => {
@@ -144,7 +155,10 @@ export const ExperimentStage: React.FC<ExperimentStageProps> = ({
   // Progress animation runner
   useEffect(() => {
     if (!isPlaying) {
-      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
       return;
     }
 
@@ -156,31 +170,39 @@ export const ExperimentStage: React.FC<ExperimentStageProps> = ({
       setStepProgress((prev) => {
         const next = prev + increment;
         if (next >= 1) {
-          clearInterval(progressIntervalRef.current!);
-          // Advance to next step if not last step
-          if (currentStepIndex < timeline.steps.length - 1) {
-            setCurrentStepIndex((s) => s + 1);
-            return 0;
-          } else {
-            setIsPlaying(false);
-            // Completed experiment!
-            if (onExperimentComplete) {
-              const matched = studentPrediction
-                ? checkPredictionAccuracy(studentPrediction, timeline)
-                : undefined;
-              onExperimentComplete(matched);
-            }
-            return 1;
+          if (progressIntervalRef.current) {
+            clearInterval(progressIntervalRef.current);
+            progressIntervalRef.current = null;
           }
+          // Defer step index transition to avoid state cycle inside updater
+          setTimeout(() => {
+            if (currentStepIndex < timeline.steps.length - 1) {
+              setCurrentStepIndex((s) => s + 1);
+              setStepProgress(0);
+            } else {
+              setIsPlaying(false);
+              setStepProgress(1);
+              if (onExperimentCompleteRef.current) {
+                const matched = studentPredictionRef.current
+                  ? checkPredictionAccuracy(studentPredictionRef.current, timeline)
+                  : undefined;
+                onExperimentCompleteRef.current(matched);
+              }
+            }
+          }, 0);
+          return 1;
         }
         return next;
       });
     }, intervalMs);
 
     return () => {
-      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
     };
-  }, [isPlaying, currentStepIndex, currentStep, playbackSpeed, timeline, onExperimentComplete, studentPrediction]);
+  }, [isPlaying, currentStepIndex, currentStep.duration, playbackSpeed, timeline]);
 
   // Prediction accuracy checker
   function checkPredictionAccuracy(pred: PredictionOption, tl: GeneratedTimeline): boolean {
@@ -340,60 +362,60 @@ export const ExperimentStage: React.FC<ExperimentStageProps> = ({
             </button>
           )}
 
-          {/* Desktop Split-Screen Toggle */}
-          <div className="hidden lg:flex items-center">
+          {/* View Mode Segmented Controls */}
+          <div className="flex items-center bg-slate-800/90 p-0.5 sm:p-1 rounded-xl border border-slate-700">
             <button
               type="button"
-              onClick={() => setIsSplitScreen(!isSplitScreen)}
-              className={`p-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 ${
-                isSplitScreen
-                  ? "bg-blue-600/20 text-blue-300 border-blue-500/30"
-                  : "bg-slate-800 text-slate-400 border-slate-700"
-              }`}
-              title="Toggle Split-Screen Macro vs Molecular View"
-            >
-              <SplitSquareVertical className="w-4 h-4" />
-              <span className="text-[11px]">Split-Screen</span>
-            </button>
-          </div>
-
-          {/* Mobile Tab Switcher */}
-          <div className="flex lg:hidden items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700">
-            <button
-              type="button"
-              onClick={() => setActiveViewTab("experiment")}
-              className={`px-2 py-1 rounded-lg text-xs font-bold ${
-                activeViewTab === "experiment" ? "bg-blue-600 text-white" : "text-slate-400"
+              onClick={() => setViewMode("experiment")}
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                viewMode === "experiment"
+                  ? "bg-blue-600 text-white shadow-xs"
+                  : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              🧪 Lab
+              <span>🧪 Apparatus View</span>
             </button>
             <button
               type="button"
-              onClick={() => setActiveViewTab("molecular")}
-              className={`px-2 py-1 rounded-lg text-xs font-bold ${
-                activeViewTab === "molecular" ? "bg-blue-600 text-white" : "text-slate-400"
+              onClick={() => setViewMode("molecular")}
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                viewMode === "molecular"
+                  ? "bg-purple-600 text-white shadow-xs"
+                  : "text-slate-400 hover:text-slate-200"
               }`}
             >
-              ⚛️ Molecular 3D
+              <Atom className="w-3.5 h-3.5" />
+              <span>Molecular 3D</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("split")}
+              className={`hidden sm:flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                viewMode === "split"
+                  ? "bg-indigo-600 text-white shadow-xs"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+              title="Split View: Apparatus + Molecular 3D"
+            >
+              <SplitSquareVertical className="w-3.5 h-3.5" />
+              <span>Split View</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Main Split-Screen Stage Container */}
+      {/* Main Simulation Stage Container */}
       <div
-        className={`grid gap-4 items-stretch ${
-          isSplitScreen ? "grid-cols-1 lg:grid-cols-12" : "grid-cols-1"
+        className={`w-full min-w-0 ${
+          viewMode === "split"
+            ? "grid grid-cols-1 xl:grid-cols-2 gap-4 items-stretch"
+            : "flex flex-col"
         }`}
       >
         {/* ================= LEFT VIEW: EXPERIMENT VIEW (APPARATUS & PRACTICAL) ================= */}
-        <div
-          className={`${
-            isSplitScreen ? "lg:col-span-7" : "w-full"
-          } ${activeViewTab === "molecular" ? "hidden lg:block" : "block"}`}
-        >
-          <div className="relative w-full h-84 sm:h-96 rounded-3xl bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col items-center justify-end p-6 overflow-hidden select-none">
+        {(viewMode === "experiment" || viewMode === "split") && (
+          <div className="w-full min-w-0 flex flex-col">
+            <div className="relative w-full h-84 sm:h-96 rounded-3xl bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border border-slate-800 shadow-2xl flex flex-col items-center justify-end p-6 overflow-hidden select-none">
             {/* Lab Bench Wall Tiles / Grid Lines backdrop */}
             <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
@@ -472,6 +494,30 @@ export const ExperimentStage: React.FC<ExperimentStageProps> = ({
                 />
               )}
 
+              {/* Solid Reagent in Crucible / Dish (e.g. Magnesium Ribbon or Oxide Ash) */}
+              {isSolidOnlyReaction && currentStepIndex >= 1 && (
+                <div className="absolute inset-x-4 bottom-4 flex flex-col items-center justify-end pointer-events-none">
+                  {currentStep.type === "product" || currentStep.type === "observe" ? (
+                    <div className="w-24 h-7 rounded-b-xl bg-gradient-to-t from-slate-100 to-white border border-slate-200 shadow-md flex items-center justify-center">
+                      <span className="text-[9px] font-mono font-bold text-slate-700 tracking-wider">WHITE ASH (MgO)</span>
+                    </div>
+                  ) : currentStep.type === "react" ? (
+                    <div className="relative flex items-center justify-center">
+                      <div className="w-16 h-4 rounded-full bg-white shadow-[0_0_40px_15px_rgba(255,255,255,0.95)] animate-pulse" />
+                      <span className="absolute text-[9px] font-mono font-black text-slate-900 bg-white/90 px-1.5 py-0.5 rounded shadow">
+                        BURNING
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="w-20 h-3 rounded-full bg-gradient-to-r from-slate-400 via-slate-200 to-slate-400 border border-slate-300 shadow-sm flex items-center justify-center">
+                      <span className="text-[8px] font-mono font-semibold text-slate-600">
+                        {timeline.primaryReagent.name.slice(0, 14)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Swirling Vortex Mixing Animation */}
               <MixingAnimation
                 isMixing={isStirring}
@@ -528,60 +574,60 @@ export const ExperimentStage: React.FC<ExperimentStageProps> = ({
               isStarting={isStartingReaction}
               isVigorous={timeline.hasGas || timeline.requiresHeat}
               glowColor={timeline.finalColor}
+              flameColor={reaction?.simulatorConfig?.reactionResult?.flameColor || (isSolidOnlyReaction ? "#ffffff" : undefined)}
               reducedMotion={reducedMotion}
             />
           </div>
         </div>
+      )}
 
         {/* ================= RIGHT VIEW: SYNCHRONIZED MOLECULAR 3D VIEW ================= */}
-        <div
-          className={`${
-            isSplitScreen ? "lg:col-span-5" : "w-full"
-          } ${activeViewTab === "experiment" ? "hidden lg:block" : "block"}`}
-        >
-          <div className="w-full h-84 sm:h-96 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl flex flex-col overflow-hidden relative">
-            {/* Molecular Header */}
-            <div className="p-3 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between z-20">
-              <div className="flex items-center gap-2">
-                <Atom className="w-4 h-4 text-purple-400 animate-spin" />
-                <span className="font-mono text-xs font-bold text-slate-200">
-                  Molecular 3D Simulation
+        {(viewMode === "molecular" || viewMode === "split") && (
+          <div className="w-full min-w-0 flex flex-col">
+            <div className="w-full h-84 sm:h-96 rounded-3xl bg-slate-900 border border-slate-800 shadow-2xl flex flex-col overflow-hidden relative">
+              {/* Molecular Header */}
+              <div className="p-3 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between z-20 shrink-0">
+                <div className="flex items-center gap-2">
+                  <Atom className="w-4 h-4 text-purple-400 animate-spin" />
+                  <span className="font-mono text-xs font-bold text-slate-200">
+                    Molecular 3D Simulation
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-slate-400">
+                  Drag to rotate • Wheel to zoom
                 </span>
               </div>
-              <span className="text-[10px] font-mono text-slate-400">
-                Drag to rotate • Wheel to zoom
-              </span>
-            </div>
 
-            {/* Molecular 3D Simulation Viewer */}
-            <div className="flex-1 w-full relative bg-slate-950">
-              {reaction ? (
-                <Molecular3DViewer
-                  reaction={reaction}
-                  height="100%"
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-slate-500">
-                  <Atom className="w-12 h-12 text-slate-700 mb-2 animate-pulse" />
-                  <p className="text-xs font-mono">
-                    Molecular lattice active for verified reactions.
-                  </p>
-                  <p className="text-[11px] text-slate-600 mt-1">
-                    Select known reactants to inspect atom bonding in 3D.
-                  </p>
-                </div>
-              )}
-            </div>
+              {/* Molecular 3D Simulation Viewer */}
+              <div className="flex-1 w-full min-w-0 relative bg-slate-950 overflow-hidden">
+                {reaction ? (
+                  <Molecular3DViewer
+                    reaction={reaction}
+                    height="100%"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center text-slate-500">
+                    <Atom className="w-12 h-12 text-slate-700 mb-2 animate-pulse" />
+                    <p className="text-xs font-mono">
+                      Molecular lattice active for verified reactions.
+                    </p>
+                    <p className="text-[11px] text-slate-600 mt-1">
+                      Select known reactants to inspect atom bonding in 3D.
+                    </p>
+                  </div>
+                )}
+              </div>
 
-            {/* Molecular Stage Synced Notice */}
-            <div className="p-2 bg-slate-950/90 border-t border-slate-800 text-[10px] font-mono text-slate-400 flex items-center justify-between px-3">
-              <span>Mechanism: {reaction?.simulatorConfig?.molecularScene?.mechanism || "Substance interaction"}</span>
-              <span className="text-purple-400 font-bold">
-                {currentStep.title}
-              </span>
+              {/* Molecular Stage Synced Notice */}
+              <div className="p-2 bg-slate-950/90 border-t border-slate-800 text-[10px] font-mono text-slate-400 flex items-center justify-between px-3 shrink-0">
+                <span className="truncate max-w-[200px]">Mechanism: {reaction?.simulatorConfig?.molecularScene?.mechanism || "Substance interaction"}</span>
+                <span className="text-purple-400 font-bold shrink-0">
+                  {currentStep.title}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* ================= EXPERIMENT TIMELINE CONTROLS ================= */}

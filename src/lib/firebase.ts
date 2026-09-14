@@ -8,6 +8,7 @@ import {
   signOut
 } from "firebase/auth";
 import {
+  initializeFirestore,
   getFirestore,
   doc,
   setDoc,
@@ -28,10 +29,23 @@ export const app = initializeApp(firebaseConfig);
 // Initialize Authentication
 export const auth = getAuth(app);
 
-// Initialize Firestore using the configured database ID
-export const db = firebaseConfig.firestoreDatabaseId
-  ? getFirestore(app, firebaseConfig.firestoreDatabaseId)
-  : getFirestore(app);
+// Initialize Firestore with long polling to bypass reverse proxy streaming buffering
+if (firebaseConfig.firestoreDatabaseId) {
+  try {
+    initializeFirestore(app, { experimentalForceLongPolling: true }, firebaseConfig.firestoreDatabaseId);
+  } catch {
+    // If already initialized, silently continue
+  }
+} else {
+  try {
+    initializeFirestore(app, { experimentalForceLongPolling: true });
+  } catch {
+    // If already initialized, silently continue
+  }
+}
+
+// Export Firestore database instance (matching blueprint and skill requirements)
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 
 // Google Auth Provider with Google Drive Scopes
 export const googleAuthProvider = new GoogleAuthProvider();
@@ -41,7 +55,60 @@ googleAuthProvider.addScope("https://www.googleapis.com/auth/drive.readonly");
 
 // In-memory token cache (strictly avoiding localStorage for security)
 let cachedAccessToken: string | null = null;
-let isSigningIn = false;
+let activeSignInPromise: Promise<{ user: User; accessToken: string | null }> | null = null;
+
+// Standard Firestore Error Handling conforming to Firebase Skill
+export enum OperationType {
+  CREATE = "create",
+  UPDATE = "update",
+  DELETE = "delete",
+  LIST = "list",
+  GET = "get",
+  WRITE = "write",
+}
+
+export interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+    isAnonymous?: boolean | null;
+    tenantId?: string | null;
+    providerInfo?: {
+      providerId?: string | null;
+      email?: string | null;
+    }[];
+  };
+}
+
+export function handleFirestoreError(
+  error: unknown,
+  operationType: OperationType,
+  path: string | null
+) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo:
+        auth.currentUser?.providerData?.map((provider) => ({
+          providerId: provider.providerId,
+          email: provider.email,
+        })) || [],
+    },
+    operationType,
+    path,
+  };
+  console.error("Firestore Error: ", JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
 
 // Initialize Auth Listener
 export const initAuth = (
@@ -66,21 +133,36 @@ export const initAuth = (
 
 // Sign in with Google Popup
 export const signInWithGoogle = async (): Promise<{ user: User; accessToken: string | null }> => {
-  try {
-    isSigningIn = true;
-    const result = await signInWithPopup(auth, googleAuthProvider);
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    if (credential?.accessToken) {
-      cachedAccessToken = credential.accessToken;
-    }
-    await syncUserProfile(result.user);
-    return { user: result.user, accessToken: cachedAccessToken };
-  } catch (error) {
-    console.error("Sign-in error:", error);
-    throw error;
-  } finally {
-    isSigningIn = false;
+  if (activeSignInPromise) {
+    return activeSignInPromise;
   }
+
+  activeSignInPromise = (async () => {
+    try {
+      const result = await signInWithPopup(auth, googleAuthProvider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      if (credential?.accessToken) {
+        cachedAccessToken = credential.accessToken;
+      }
+      await syncUserProfile(result.user);
+      return { user: result.user, accessToken: cachedAccessToken };
+    } catch (error: any) {
+      if (
+        error?.code === "auth/cancelled-popup-request" ||
+        error?.code === "auth/popup-closed-by-user"
+      ) {
+        // User voluntarily dismissed or replaced the popup dialog; handle quietly
+        console.info("Firebase popup authentication was cancelled or closed by user.");
+      } else {
+        console.error("Sign-in error:", error);
+      }
+      throw error;
+    } finally {
+      activeSignInPromise = null;
+    }
+  })();
+
+  return activeSignInPromise;
 };
 
 export const getAccessToken = (): string | null => {
@@ -141,13 +223,19 @@ export const saveExperimentToCloud = async (
   userId: string,
   data: SavedExperimentData
 ): Promise<string> => {
-  const colRef = collection(db, "users", userId, "experiments");
-  const docRef = await addDoc(colRef, {
-    ...data,
-    userId,
-    createdAt: serverTimestamp()
-  });
-  return docRef.id;
+  const path = `users/${userId}/experiments`;
+  try {
+    const colRef = collection(db, "users", userId, "experiments");
+    const docRef = await addDoc(colRef, {
+      ...data,
+      userId,
+      createdAt: serverTimestamp()
+    });
+    return docRef.id;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.CREATE, path);
+    return "";
+  }
 };
 
 // Save a challenge completion record
@@ -157,15 +245,20 @@ export const saveChallengeProgressToCloud = async (
   score: number,
   hintsUsed: number
 ) => {
-  const colRef = collection(db, "users", userId, "challenges");
-  await addDoc(colRef, {
-    userId,
-    challengeId,
-    completed: true,
-    score,
-    hintsUsed,
-    solvedAt: serverTimestamp()
-  });
+  const path = `users/${userId}/challenges`;
+  try {
+    const colRef = collection(db, "users", userId, "challenges");
+    await addDoc(colRef, {
+      userId,
+      challengeId,
+      completed: true,
+      score,
+      hintsUsed,
+      solvedAt: serverTimestamp()
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.CREATE, path);
+  }
 };
 
 // Save lab report record to Firestore
@@ -186,36 +279,53 @@ export const saveReportToCloud = async (
   userId: string,
   report: SavedReportData
 ): Promise<string> => {
-  const colRef = collection(db, "users", userId, "reports");
-  const docRef = await addDoc(colRef, {
-    ...report,
-    userId,
-    createdAt: serverTimestamp()
-  });
-  return docRef.id;
+  const path = `users/${userId}/reports`;
+  try {
+    const colRef = collection(db, "users", userId, "reports");
+    const docRef = await addDoc(colRef, {
+      ...report,
+      userId,
+      createdAt: serverTimestamp()
+    });
+    return docRef.id;
+  } catch (error) {
+    handleFirestoreError(error, OperationType.CREATE, path);
+    return "";
+  }
 };
 
 // Fetch user's saved experiments
 export const getUserSavedExperiments = async (userId: string) => {
+  const path = `users/${userId}/experiments`;
   try {
     const colRef = collection(db, "users", userId, "experiments");
     const q = query(colRef, orderBy("createdAt", "desc"));
     const snap = await getDocs(q);
     return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   } catch (err) {
-    console.warn("Could not fetch saved experiments:", err);
+    console.warn("Could not fetch saved experiments from cloud (offline mode active):", err);
     return [];
   }
 };
 
-// Connection diagnostic check
+// Connection diagnostic check with timeout race to prevent 10s blocking
 export const testFirestoreConnection = async (): Promise<boolean> => {
   try {
-    await getDocFromServer(doc(db, "test", "connection"));
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Connection timeout")), 3000)
+    );
+    await Promise.race([
+      getDocFromServer(doc(db, "test", "connection")),
+      timeoutPromise
+    ]);
     return true;
   } catch (err: any) {
-    if (err?.message?.includes("client is offline")) {
-      console.warn("Firestore client is offline, check connection.");
+    if (
+      err?.message?.includes("client is offline") ||
+      err?.message?.includes("timeout") ||
+      err?.code === "unavailable"
+    ) {
+      // Graceful degradation when offline or backend unreachable
       return false;
     }
     return true;

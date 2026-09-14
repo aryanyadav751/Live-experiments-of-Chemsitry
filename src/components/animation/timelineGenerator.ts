@@ -115,43 +115,74 @@ export function generateTimelineForReaction(
   const requiresElectricity = Boolean(reaction?.conditions?.some((c) => c.toLowerCase().includes("electric")) || discoveryResult?.equation?.includes("Electricity"));
 
   // Reagents Info
+  const primaryName = reaction?.simulatorConfig?.primarySubstance?.name || reaction?.reactants?.[0] || "Primary Solution";
+  const isPrimarySolid = Boolean(
+    reaction?.simulatorConfig?.primarySubstance?.solidColor ||
+    reaction?.simulatorConfig?.apparatus === "crucible" ||
+    reaction?.simulatorConfig?.apparatus === "china-dish" ||
+    reaction?.reactants?.[0]?.includes("(s)") ||
+    primaryName.toLowerCase().includes("ribbon") ||
+    primaryName.toLowerCase().includes("nail") ||
+    primaryName.toLowerCase().includes("granule") ||
+    primaryName.startsWith("Mg") ||
+    primaryName.startsWith("Fe") ||
+    primaryName.startsWith("Zn")
+  );
+
+  const primaryColor = reaction?.simulatorConfig?.primarySubstance?.solidColor ||
+    reaction?.simulatorConfig?.primarySubstance?.liquidColor ||
+    initialColor;
+
   const primaryReagent: ReagentTransferInfo = {
     id: "primary",
-    name: reaction?.reactants?.[0] || "Primary Solution",
-    formula: reaction?.reactants?.[0] || "Solvent / Reagent",
-    state: "liquid",
-    color: initialColor,
-    containerType: "bottle"
+    name: primaryName,
+    formula: reaction?.simulatorConfig?.primarySubstance?.formula || reaction?.reactants?.[0] || "Reagent",
+    state: isPrimarySolid ? "solid" : "liquid",
+    color: primaryColor,
+    containerType: isPrimarySolid ? "spatula" : "bottle"
   };
 
   const addedReagents: ReagentTransferInfo[] = [];
   if (reaction?.reactants && reaction.reactants.length > 1) {
     const second = reaction.reactants[1];
-    const isSolid = second.includes("(s)") || second.startsWith("Fe") || second.startsWith("Zn") || second.startsWith("Mg");
-    addedReagents.push({
-      id: "second",
-      name: second,
-      formula: second,
-      state: isSolid ? "solid" : "liquid",
-      color: isSolid ? "#64748b" : "#cbd5e1",
-      containerType: isSolid ? "spatula" : "dropper"
-    });
+    const isAtmosphericGas = second.includes("O₂") || second.toLowerCase().includes("oxygen") || second.toLowerCase().includes("air");
+    if (!isAtmosphericGas) {
+      const isSolid = second.includes("(s)") || second.startsWith("Fe") || second.startsWith("Zn") || second.startsWith("Mg");
+      addedReagents.push({
+        id: "second",
+        name: second,
+        formula: second,
+        state: isSolid ? "solid" : "liquid",
+        color: isSolid ? "#64748b" : "#cbd5e1",
+        containerType: isSolid ? "spatula" : "dropper"
+      });
+    }
   } else if (selectedChemicals.length > 1) {
+    const secondId = selectedChemicals[1];
+    const isSolid = ["fe", "zn", "mg", "cu", "caco3"].includes(secondId);
     addedReagents.push({
       id: "added-reagent",
-      name: selectedChemicals[1].toUpperCase(),
-      formula: selectedChemicals[1].toUpperCase(),
-      state: ["fe", "zn", "mg", "cu", "caco3"].includes(selectedChemicals[1]) ? "solid" : "liquid",
-      color: "#94a3b8",
-      containerType: ["fe", "zn", "mg", "cu", "caco3"].includes(selectedChemicals[1]) ? "spatula" : "bottle"
+      name: secondId.toUpperCase(),
+      formula: secondId.toUpperCase(),
+      state: isSolid ? "solid" : "liquid",
+      color: isSolid ? "#94a3b8" : "#cbd5e1",
+      containerType: isSolid ? "spatula" : "bottle"
     });
   }
 
+  // Check if combustion / crucible solid reaction
+  const isCombustion = Boolean(
+    reaction?.id === "ch1-magnesium-ribbon" ||
+    (isPrimarySolid && apparatus === "crucible") ||
+    reaction?.reactionType?.some(t => t.toLowerCase().includes("combustion"))
+  );
+
   // Construct standard CBSE Class 10 animation steps
+  let stageCounter = 0;
   const steps: ExperimentAnimationStep[] = [
     {
       id: "step-setup",
-      stageIndex: 0,
+      stageIndex: stageCounter++,
       type: "setup",
       title: "Apparatus Setup",
       duration: 2600,
@@ -161,14 +192,18 @@ export function generateTimelineForReaction(
     },
     {
       id: "step-add-primary",
-      stageIndex: 1,
-      type: "pour",
-      title: "Add Primary Reagent",
+      stageIndex: stageCounter++,
+      type: isPrimarySolid ? "add" : "pour",
+      title: isPrimarySolid ? `Place ${primaryReagent.name}` : "Add Primary Reagent",
       duration: 3200,
-      description: `Dispensing ${primaryReagent.name} into the reaction vessel.`,
-      actionPrompt: `Tilt bottle and pour ${primaryReagent.name} into apparatus`,
-      actionRequired: "pour",
-      visualEffects: { pouring: true }
+      description: isPrimarySolid
+        ? `Placing clean ${primaryReagent.name} onto the ${apparatus.replace("-", " ")}.`
+        : `Dispensing ${primaryReagent.name} into the reaction vessel.`,
+      actionPrompt: isPrimarySolid
+        ? `Pick and position ${primaryReagent.name} on ${apparatus.replace("-", " ")}`
+        : `Tilt bottle and pour ${primaryReagent.name} into apparatus`,
+      actionRequired: isPrimarySolid ? "drop_solid" : "pour",
+      visualEffects: isPrimarySolid ? { droppingSolid: true } : { pouring: true }
     }
   ];
 
@@ -176,7 +211,7 @@ export function generateTimelineForReaction(
     const reagent = addedReagents[0];
     steps.push({
       id: "step-add-secondary",
-      stageIndex: 2,
+      stageIndex: stageCounter++,
       type: reagent.state === "solid" ? "add" : "pour",
       title: `Introduce ${reagent.name}`,
       duration: 3200,
@@ -194,39 +229,46 @@ export function generateTimelineForReaction(
     });
   }
 
-  if (requiresHeat) {
+  if (requiresHeat || isCombustion) {
     steps.push({
       id: "step-heat",
-      stageIndex: 3,
+      stageIndex: stageCounter++,
       type: "heat",
-      title: "Apply Virtual Thermal Energy",
-      duration: 3000,
-      description: "Engaging virtual Bunsen burner flame underneath vessel to supply activation energy.",
-      actionPrompt: "Ignite virtual Bunsen burner to heat reactants",
+      title: isCombustion ? "Ignition in Bunsen Flame" : "Apply Virtual Thermal Energy",
+      duration: 3200,
+      description: isCombustion
+        ? "Holding magnesium ribbon over burner flame until it catches fire."
+        : "Engaging virtual Bunsen burner flame underneath vessel to supply activation energy.",
+      actionPrompt: isCombustion ? "Ignite Bunsen flame to heat magnesium ribbon" : "Ignite virtual Bunsen burner to heat reactants",
       actionRequired: "apply_heat",
       visualEffects: { heatApplied: true }
     });
   }
 
-  steps.push({
-    id: "step-mix",
-    stageIndex: requiresHeat ? 4 : 3,
-    type: "mix",
-    title: "Vigorous Mixing & Dispersion",
-    duration: 3000,
-    description: "Swirling liquid vortex ensures intimate molecular contact between reacting species.",
-    actionPrompt: "Press MIX to swirl reactants together",
-    actionRequired: "mix",
-    visualEffects: { stirring: true }
-  });
+  // Only add liquid mixing if not a dry solid crucible combustion
+  if (!isCombustion && (!isPrimarySolid || addedReagents.some(r => r.state === "liquid"))) {
+    steps.push({
+      id: "step-mix",
+      stageIndex: stageCounter++,
+      type: "mix",
+      title: "Vigorous Mixing & Dispersion",
+      duration: 3000,
+      description: "Swirling liquid vortex ensures intimate molecular contact between reacting species.",
+      actionPrompt: "Press MIX to swirl reactants together",
+      actionRequired: "mix",
+      visualEffects: { stirring: true }
+    });
+  }
 
   steps.push({
     id: "step-reaction",
-    stageIndex: requiresHeat ? 5 : 4,
+    stageIndex: stageCounter++,
     type: "react",
-    title: "Chemical Reaction Occurs",
+    title: isCombustion ? "Dazzling White Flame Reaction" : "Chemical Reaction Occurs",
     duration: 3800,
-    description: "Chemical bonds reorganize as activation energy is crossed and electron transfer takes place.",
+    description: isCombustion
+      ? "Magnesium burns vigorously with a dazzling white flame, combining with atmospheric oxygen."
+      : "Chemical bonds reorganize as activation energy is crossed and electron transfer takes place.",
     actionPrompt: "Observe chemical transformation in progress",
     actionRequired: "observe",
     visualEffects: {
@@ -241,18 +283,20 @@ export function generateTimelineForReaction(
 
   steps.push({
     id: "step-observe",
-    stageIndex: requiresHeat ? 6 : 5,
+    stageIndex: stageCounter++,
     type: "observe",
     title: "Record Qualitative Observations",
     duration: 3200,
-    description: "Macroscopic and sensory clues verify chemical conversion according to NCERT practical criteria.",
+    description: isCombustion
+      ? "White ash of magnesium oxide (MgO) is collected on the watch glass / crucible."
+      : "Macroscopic and sensory clues verify chemical conversion according to NCERT practical criteria.",
     actionPrompt: "Confirm physical observations in lab journal",
     actionRequired: "observe"
   });
 
   steps.push({
     id: "step-products",
-    stageIndex: requiresHeat ? 7 : 6,
+    stageIndex: stageCounter++,
     type: "product",
     title: "Final Chemical Yield",
     duration: 2800,

@@ -55,7 +55,7 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<0.5 | 1 | 2>(1);
   const [showMolecularView, setShowMolecularView] = useState<boolean>(false);
-  const [showEquation, setShowEquation] = useState<boolean>(true);
+  const [showEquation, setShowEquation] = useState<boolean>(false);
   const [showObservation, setShowObservation] = useState<boolean>(true);
 
   const timerRef = useRef<any>(null);
@@ -123,27 +123,28 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
       className={`rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden flex flex-col ${className}`}
     >
       {/* Top Laboratory Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/25 font-bold text-lg">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 p-3.5 sm:p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/25 font-bold text-lg shrink-0">
             🧪
           </div>
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-mono font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                 Chapter {reaction.chapterNumber} • {experiment.animationType.toUpperCase()}
               </span>
               <SafetyBadge mode={experiment.safetyLevel} size="sm" />
             </div>
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight truncate">
               {experiment.title}
             </h2>
           </div>
         </div>
 
         {/* View Toggles */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
+            type="button"
             onClick={() => setShowMolecularView(!showMolecularView)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
               showMolecularView
@@ -152,26 +153,28 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
             }`}
           >
             <Atom className="w-3.5 h-3.5" />
-            {showMolecularView ? "Hide 3D View" : "3D Molecular View"}
+            <span>{showMolecularView ? "Hide 3D View" : "3D Molecular View"}</span>
           </button>
 
           <button
+            type="button"
             onClick={() => setShowEquation(!showEquation)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
               showEquation
-                ? "bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900 border-transparent"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700"
+                ? "bg-blue-600 text-white border-blue-500 shadow-xs"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             Equation
           </button>
 
           <button
+            type="button"
             onClick={() => setShowObservation(!showObservation)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
               showObservation
-                ? "bg-emerald-600 text-white border-emerald-500"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700"
+                ? "bg-emerald-600 text-white border-emerald-500 shadow-xs"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             Observations
@@ -179,6 +182,7 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
 
           {onClose && (
             <button
+              type="button"
               onClick={onClose}
               className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white bg-slate-200/60 dark:bg-slate-800"
             >
@@ -189,20 +193,20 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
       </div>
 
       {/* Safety Guideline Banner */}
-      <div className="px-4 sm:px-6 py-2.5 bg-amber-500/10 border-b border-amber-500/20 text-amber-900 dark:text-amber-200 text-xs flex flex-wrap items-center justify-between gap-2">
-        <span className="flex items-center gap-2">
+      <div className="px-3.5 sm:px-6 py-2 bg-amber-500/10 border-b border-amber-500/20 text-amber-900 dark:text-amber-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <span className="flex items-center gap-2 min-w-0 flex-1">
           <ShieldAlert className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
-          <strong className="font-bold">Safety Directive:</strong>
-          <span>{experiment.safetyPrecautions[0]}</span>
+          <strong className="font-bold shrink-0">Safety Directive:</strong>
+          <span className="truncate sm:whitespace-normal">{experiment.safetyPrecautions[0]}</span>
         </span>
-        <span className="font-mono text-[11px] text-amber-700 dark:text-amber-400 font-bold">
+        <span className="font-mono text-[11px] text-amber-700 dark:text-amber-400 font-bold shrink-0 self-start sm:self-auto">
           CBSE Class 10 Aligned Simulation
         </span>
       </div>
 
       {/* Mandatory Experiment Timeline: Reactants → Mixing → Reaction → Observation → Products */}
-      <div className="px-4 sm:px-6 py-3 bg-slate-100 dark:bg-slate-950/50 border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
-        <div className="flex items-center min-w-[540px] justify-between">
+      <div className="px-3 sm:px-6 py-2.5 sm:py-3 bg-slate-100/90 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 w-full overflow-hidden">
+        <div className="flex items-center justify-between w-full max-w-4xl mx-auto gap-1 sm:gap-2">
           {TIMELINE_STAGES.map((t, idx) => {
             const isCurrent = stage === t.id;
             const isCompleted = stage > t.id;
@@ -210,35 +214,40 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
             return (
               <React.Fragment key={t.id}>
                 {idx > 0 && (
-                  <div className={`h-[2px] flex-1 mx-2 transition-colors ${
-                    isCompleted ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-800"
-                  }`} />
+                  <div
+                    className={`h-[2px] flex-1 min-w-[6px] sm:min-w-[12px] md:min-w-[20px] transition-colors ${
+                      isCompleted ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-800"
+                    }`}
+                  />
                 )}
                 <button
+                  type="button"
                   onClick={() => {
                     setStage(t.id);
                     setIsPlaying(false);
                   }}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs transition-all ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl text-xs transition-all shrink-0 ${
                     isCurrent
-                      ? "bg-blue-600 text-white font-bold shadow-md shadow-blue-500/25 scale-105"
+                      ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-500/25 ring-2 ring-blue-500/40"
                       : isCompleted
-                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold"
-                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold hover:bg-emerald-500/25"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800/60"
                   }`}
                 >
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center font-mono text-[10px] ${
-                    isCurrent
-                      ? "bg-white text-blue-600 font-bold"
-                      : isCompleted
-                      ? "bg-emerald-500 text-white"
-                      : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-                  }`}>
+                  <span
+                    className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center font-mono text-[10px] sm:text-xs shrink-0 font-bold transition-all ${
+                      isCurrent
+                        ? "bg-white text-blue-600"
+                        : isCompleted
+                        ? "bg-emerald-500 text-white"
+                        : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                    }`}
+                  >
                     {isCompleted ? "✓" : t.id + 1}
                   </span>
-                  <div className="text-left">
-                    <div className="font-bold leading-tight">{t.label}</div>
-                  </div>
+                  <span className="font-bold text-[11px] sm:text-xs leading-tight whitespace-nowrap">
+                    {t.label}
+                  </span>
                 </button>
               </React.Fragment>
             );
@@ -248,8 +257,10 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
 
       {/* Optional Top Equation View */}
       {showEquation && (
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-900/30">
-          <ReactionEquation reaction={reaction} interactive={true} size="md" />
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-900/40 backdrop-blur-xs">
+          <div className="max-w-4xl mx-auto">
+            <ReactionEquation reaction={reaction} interactive={true} size="md" />
+          </div>
         </div>
       )}
 
@@ -272,7 +283,7 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
       {/* Main Simulation Stage & Controls Area */}
       <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Stage Container (8 Columns) */}
-        <div className="lg:col-span-8 flex flex-col items-center w-full">
+        <div className="lg:col-span-8 flex flex-col items-center w-full min-w-0">
           <ExperimentStage
             reaction={reaction}
             onExperimentComplete={() => markExperimentSimulated(reaction.id)}
@@ -280,7 +291,7 @@ export const ExperimentSimulator: React.FC<ExperimentSimulatorProps> = ({
         </div>
 
         {/* Experiment Guide & Observations Side Panel (4 Columns) */}
-        <div className="lg:col-span-4 flex flex-col gap-4">
+        <div className="lg:col-span-4 flex flex-col gap-4 min-w-0">
           {/* Data-Driven Steps from experiments.ts */}
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 p-4 sm:p-5 space-y-3">
             <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">

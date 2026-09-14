@@ -63,11 +63,12 @@ export const ReactionEquation: React.FC<ReactionEquationProps> = ({
     <div className={`relative ${className}`} id={`reaction-equation-${reaction.id}`}>
       {/* Interactive instruction cue */}
       {interactive && (
-        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-2 px-1">
-          <span className="flex items-center gap-1 font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Click any chemical formula to inspect molecular role & NCERT concept
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs text-slate-400 mb-2.5 px-1">
+          <span className="flex items-center gap-1.5 font-medium text-[11px] sm:text-xs">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span>Click any chemical formula to inspect molecular role & NCERT concept</span>
           </span>
-          <span className="font-mono text-[11px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">
+          <span className="self-start sm:self-auto font-mono text-[10px] sm:text-[11px] bg-slate-800 border border-slate-700/60 px-2 py-0.5 rounded text-slate-300 font-semibold shrink-0">
             Balanced Equation
           </span>
         </div>
